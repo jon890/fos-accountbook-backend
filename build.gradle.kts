@@ -56,7 +56,7 @@ dependencies {
     testRuntimeOnly(libs.h2.database)
     
     // Awaitility for async testing
-    testImplementation("org.awaitility:awaitility:4.2.0")
+    testImplementation("org.awaitility:awaitility:4.3.0")
 }
 
 // QueryDSL 컴파일 설정

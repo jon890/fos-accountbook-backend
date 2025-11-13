@@ -4,10 +4,8 @@ import com.bifos.accountbook.common.DatabaseCleanupListener;
 import com.bifos.accountbook.common.TestFixtures;
 import com.bifos.accountbook.common.TestFixturesSupport;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
@@ -87,13 +85,5 @@ public abstract class AbstractControllerTest extends TestFixturesSupport {
    */
   @Autowired
   protected ObjectMapper objectMapper;
-
-  /**
-   * 각 테스트 실행 후 SecurityContext 정리
-   */
-  @AfterEach
-  void cleanupSecurityContext() {
-    SecurityContextHolder.clearContext();
-  }
 }
 

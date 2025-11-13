@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * 테스트용 Fixture 자동 관리를 위한 추상 클래스
@@ -25,7 +26,7 @@ import org.springframework.context.ApplicationContext;
  * <h3>기능:</h3>
  * <ul>
  *     <li>{@code @BeforeEach}: fixtures 자동 초기화</li>
- *     <li>{@code @AfterEach}: fixtures 캐시 자동 정리</li>
+ *     <li>{@code @AfterEach}: fixtures 캐시 및 SecurityContext 자동 정리</li>
  *     <li>{@code @FosSpringBootTest}와 함께 사용 권장</li>
  * </ul>
  *
@@ -34,6 +35,7 @@ import org.springframework.context.ApplicationContext;
  *     <li>반복적인 setUp/tearDown 로직 제거</li>
  *     <li>일관된 테스트 패턴</li>
  *     <li>코드 중복 최소화</li>
+ *     <li>테스트 격리 보장 (SecurityContext 자동 정리)</li>
  * </ul>
  */
 @FosSpringBootTest
@@ -56,10 +58,14 @@ public abstract class TestFixturesSupport {
   }
 
   /**
-   * 각 테스트 실행 후 fixtures 캐시 자동 정리
+   * 각 테스트 실행 후 fixtures 캐시 및 SecurityContext 자동 정리
    */
   @AfterEach
   void tearDownFixtures() {
+    // SecurityContext 정리 (테스트 격리 보장)
+    SecurityContextHolder.clearContext();
+
+    // Fixtures 캐시 정리
     if (fixtures != null) {
       fixtures.clear();
     }

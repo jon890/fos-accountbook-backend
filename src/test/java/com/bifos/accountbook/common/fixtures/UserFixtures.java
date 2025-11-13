@@ -53,7 +53,7 @@ public class UserFixtures {
     private String email = "test@example.com";
     private String name = "Test User";
     private String provider = "google";
-    private final String providerId = "test-provider-" + System.currentTimeMillis();
+    private String providerId;
 
     private final UserRepository userRepository;
 
@@ -76,12 +76,22 @@ public class UserFixtures {
       return this;
     }
 
+    public UserBuilder providerId(String providerId) {
+      this.providerId = providerId;
+      return this;
+    }
+
     public User build() {
+      // providerId가 설정되지 않았다면 build() 시점에 생성 (재사용 시 중복 방지)
+      String finalProviderId = providerId != null
+          ? providerId
+          : "test-provider-" + System.currentTimeMillis() + "-" + System.nanoTime();
+
       User user = User.builder()
                       .email(email)
                       .name(name)
                       .provider(provider)
-                      .providerId(providerId)
+                      .providerId(finalProviderId)
                       .build();
       user = userRepository.save(user);
 

@@ -56,6 +56,13 @@ public interface NotificationRepository {
   List<Notification> findAllByFamilyUuidAndType(CustomUuid familyUuid, NotificationType type);
 
   /**
+   * 가족 UUID와 사용자 UUID로 알림 조회 (최신순)
+   * 가족 내에서 특정 사용자의 알림만 조회합니다.
+   */
+  List<Notification> findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
+      CustomUuid familyUuid, CustomUuid userUuid);
+
+  /**
    * 오래된 알림 삭제 (예: 3개월 이상 지난 알림)
    * Batch 작업용
    */

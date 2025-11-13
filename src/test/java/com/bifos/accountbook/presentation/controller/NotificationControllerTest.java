@@ -69,25 +69,21 @@ class NotificationControllerTest extends AbstractControllerTest {
         CustomUuid.from(testFamily.getUuid()));
     testCategory = categories.getFirst();
 
-    // 테스트용 알림 생성 (예산 초과 지출 생성)
-    CreateExpenseRequest expenseRequest = new CreateExpenseRequest(testCategory.getUuid().getValue(),
-                                                                   new BigDecimal("550000.00"),
-                                                                   "테스트 지출",
-                                                                   LocalDateTime.now()
-    );
-    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), expenseRequest);
-
-    // TransactionalEventListener로 인해 트랜잭션 커밋 후 동기로 처리됨
-    // 따라서 별도의 대기 없이 바로 확인 가능
-    List<Notification> notifications =
-        notificationRepository.findAllByFamilyUuidOrderByCreatedAtDesc(
-            CustomUuid.from(testFamily.getUuid()));
-    assertThat(notifications).isNotEmpty();
+    // 알림 생성은 각 테스트에서 필요할 때만 수행하도록 변경
   }
 
   @Test
   @DisplayName("가족 알림 목록을 조회할 수 있다")
   void getFamilyNotifications_Success() throws Exception {
+    // Given: 알림 생성 (예산 초과 지출)
+    CreateExpenseRequest expenseRequest = new CreateExpenseRequest(
+        testCategory.getUuid().getValue(),
+        new BigDecimal("550000.00"),
+        "테스트 지출",
+        LocalDateTime.now()
+    );
+    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), expenseRequest);
+
     // When & Then
     mockMvc.perform(get("/api/v1/families/{familyUuid}/notifications", testFamily.getUuid())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,6 +98,15 @@ class NotificationControllerTest extends AbstractControllerTest {
   @Test
   @DisplayName("읽지 않은 알림 수를 조회할 수 있다")
   void getUnreadCount_Success() throws Exception {
+    // Given: 알림 생성 (예산 초과 지출)
+    CreateExpenseRequest expenseRequest = new CreateExpenseRequest(
+        testCategory.getUuid().getValue(),
+        new BigDecimal("550000.00"),
+        "테스트 지출",
+        LocalDateTime.now()
+    );
+    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), expenseRequest);
+
     // When & Then
     mockMvc.perform(get("/api/v1/families/{familyUuid}/notifications/unread-count", testFamily.getUuid())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -114,7 +119,16 @@ class NotificationControllerTest extends AbstractControllerTest {
   @Test
   @DisplayName("알림을 읽음 처리할 수 있다")
   void markAsRead_Success() throws Exception {
-    // Given: 현재 사용자의 알림 조회
+    // Given: 알림 생성 (예산 초과 지출)
+    CreateExpenseRequest expenseRequest = new CreateExpenseRequest(
+        testCategory.getUuid().getValue(),
+        new BigDecimal("550000.00"),
+        "테스트 지출",
+        LocalDateTime.now()
+    );
+    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), expenseRequest);
+
+    // 현재 사용자의 알림 조회
     String notificationUuid = notificationRepository
         .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
             CustomUuid.from(testFamily.getUuid()),
@@ -136,6 +150,15 @@ class NotificationControllerTest extends AbstractControllerTest {
   @Test
   @DisplayName("모든 알림을 읽음 처리할 수 있다")
   void markAllAsRead_Success() throws Exception {
+    // Given: 알림 생성 (예산 초과 지출)
+    CreateExpenseRequest expenseRequest = new CreateExpenseRequest(
+        testCategory.getUuid().getValue(),
+        new BigDecimal("550000.00"),
+        "테스트 지출",
+        LocalDateTime.now()
+    );
+    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), expenseRequest);
+
     // When & Then
     mockMvc.perform(post("/api/v1/families/{familyUuid}/notifications/mark-all-read", testFamily.getUuid())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -168,7 +191,16 @@ class NotificationControllerTest extends AbstractControllerTest {
   @Test
   @DisplayName("알림 상세 조회가 정상적으로 동작한다")
   void getNotification_Success() throws Exception {
-    // Given: 알림 조회
+    // Given: 알림 생성 (예산 초과 지출)
+    CreateExpenseRequest expenseRequest = new CreateExpenseRequest(
+        testCategory.getUuid().getValue(),
+        new BigDecimal("550000.00"),
+        "테스트 지출",
+        LocalDateTime.now()
+    );
+    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), expenseRequest);
+
+    // 알림 조회
     String notificationUuid = notificationRepository
         .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
             CustomUuid.from(testFamily.getUuid()),
@@ -211,14 +243,15 @@ class NotificationControllerTest extends AbstractControllerTest {
     applicationContext.getBean(FamilyMemberRepository.class)
                       .save(otherMember);
 
-    // 다른 사용자에게도 알림이 생성되도록 추가 지출 생성
-    CreateExpenseRequest additionalExpense = new CreateExpenseRequest(
+    // testUser와 otherUser 모두에게 알림이 생성되도록 지출 생성 (80% 초과)
+    // otherUser가 추가된 후 지출을 생성하면 두 사용자 모두에게 알림이 생성됨
+    CreateExpenseRequest expenseRequest = new CreateExpenseRequest(
         testCategory.getUuid().getValue(),
-        new BigDecimal("300000.00"),
-        "추가 지출",
+        new BigDecimal("850000.00"),
+        "80% 초과 지출",
         LocalDateTime.now()
     );
-    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), additionalExpense);
+    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), expenseRequest);
 
     // When: testUser의 알림 조회
     mockMvc.perform(get("/api/v1/families/{familyUuid}/notifications", testFamily.getUuid())
@@ -229,6 +262,24 @@ class NotificationControllerTest extends AbstractControllerTest {
            .andExpect(jsonPath("$.data.notifications").isArray())
            .andExpect(jsonPath("$.data.notifications[*].userUuid").value(org.hamcrest.Matchers.everyItem(
                org.hamcrest.Matchers.equalTo(testUser.getUuid().getValue()))));
+
+    // Then: otherUser의 알림은 조회되지 않아야 함 (직접 확인)
+    List<Notification> testUserNotifications = notificationRepository
+        .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
+            CustomUuid.from(testFamily.getUuid()),
+            testUser.getUuid());
+
+    List<Notification> otherUserNotifications = notificationRepository
+        .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
+            CustomUuid.from(testFamily.getUuid()),
+            otherUser.getUuid());
+
+    // testUser의 알림은 존재해야 하고, 모두 testUser의 것임
+    assertThat(testUserNotifications).isNotEmpty();
+    assertThat(testUserNotifications).allMatch(n -> n.getUserUuid().equals(testUser.getUuid()));
+
+    // otherUser의 알림도 존재해야 함 (가족 구성원이므로)
+    assertThat(otherUserNotifications).isNotEmpty();
   }
 
   @Test
@@ -251,20 +302,25 @@ class NotificationControllerTest extends AbstractControllerTest {
     applicationContext.getBean(FamilyMemberRepository.class)
                       .save(otherMember);
 
-    // 다른 사용자에게 알림 생성 (추가 지출)
-    CreateExpenseRequest additionalExpense = new CreateExpenseRequest(
+    // testUser와 otherUser 모두에게 알림이 생성되도록 지출 생성 (80% 초과)
+    // otherUser가 추가된 후 지출을 생성하면 두 사용자 모두에게 알림이 생성됨
+    CreateExpenseRequest expenseRequest = new CreateExpenseRequest(
         testCategory.getUuid().getValue(),
-        new BigDecimal("300000.00"),
-        "추가 지출",
+        new BigDecimal("850000.00"),
+        "80% 초과 지출",
         LocalDateTime.now()
     );
-    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), additionalExpense);
+    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), expenseRequest);
 
-    // 다른 사용자의 알림 조회
-    String otherUserNotificationUuid = notificationRepository
+    // 다른 사용자의 알림 조회 (반드시 존재해야 함)
+    List<Notification> otherUserNotifications = notificationRepository
         .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
             CustomUuid.from(testFamily.getUuid()),
-            otherUser.getUuid())
+            otherUser.getUuid());
+
+    assertThat(otherUserNotifications).isNotEmpty();
+
+    String otherUserNotificationUuid = otherUserNotifications
         .getFirst()
         .getNotificationUuid()
         .getValue();
@@ -296,34 +352,44 @@ class NotificationControllerTest extends AbstractControllerTest {
     applicationContext.getBean(FamilyMemberRepository.class)
                       .save(otherMember);
 
-    // 추가 지출로 알림 생성
-    CreateExpenseRequest additionalExpense = new CreateExpenseRequest(
+    // testUser와 otherUser 모두에게 알림이 생성되도록 지출 생성 (80% 초과)
+    // otherUser가 추가된 후 지출을 생성하면 두 사용자 모두에게 알림이 생성됨
+    CreateExpenseRequest expenseRequest = new CreateExpenseRequest(
         testCategory.getUuid().getValue(),
-        new BigDecimal("300000.00"),
-        "추가 지출",
+        new BigDecimal("850000.00"),
+        "80% 초과 지출",
         LocalDateTime.now()
     );
-    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), additionalExpense);
+    expenseService.createExpense(testUser.getUuid(), CustomUuid.from(testFamily.getUuid()), expenseRequest);
 
-    // testUser의 알림 읽음 처리
-    String testUserNotificationUuid = notificationRepository
+    // testUser의 알림 조회 (반드시 존재해야 함)
+    List<Notification> testUserNotifications = notificationRepository
         .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
             CustomUuid.from(testFamily.getUuid()),
-            testUser.getUuid())
+            testUser.getUuid());
+
+    assertThat(testUserNotifications).isNotEmpty();
+
+    String testUserNotificationUuid = testUserNotifications
         .getFirst()
         .getNotificationUuid()
         .getValue();
 
+    // When: testUser의 알림 읽음 처리
     mockMvc.perform(patch("/api/v1/notifications/{notificationUuid}/read", testUserNotificationUuid)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-User-UUID", testUser.getUuid().getValue()))
            .andExpect(status().isOk());
 
     // Then: otherUser의 알림은 여전히 읽지 않음 상태여야 함
-    Long otherUserUnreadCount = notificationRepository
+    List<Notification> otherUserNotifications = notificationRepository
         .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
             CustomUuid.from(testFamily.getUuid()),
-            otherUser.getUuid())
+            otherUser.getUuid());
+
+    assertThat(otherUserNotifications).isNotEmpty();
+
+    Long otherUserUnreadCount = otherUserNotifications
         .stream()
         .filter(n -> !n.getIsRead())
         .count();

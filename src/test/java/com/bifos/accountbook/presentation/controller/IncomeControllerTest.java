@@ -2,7 +2,6 @@ package com.bifos.accountbook.presentation.controller;
 
 import com.bifos.accountbook.application.dto.income.CreateIncomeRequest;
 import com.bifos.accountbook.application.dto.income.UpdateIncomeRequest;
-import com.bifos.accountbook.common.AbstractControllerTest;
 import com.bifos.accountbook.domain.entity.Category;
 import com.bifos.accountbook.domain.entity.Family;
 import com.bifos.accountbook.domain.entity.Income;

@@ -1,5 +1,8 @@
-package com.bifos.accountbook.common;
+package com.bifos.accountbook.presentation.controller;
 
+import com.bifos.accountbook.common.DatabaseCleanupListener;
+import com.bifos.accountbook.common.FosSpringBootTest;
+import com.bifos.accountbook.common.TestFixtures;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,12 +33,12 @@ import org.springframework.test.web.servlet.MockMvc;
  *     void createUser_Success() throws Exception {
  *         // Given: TestFixtures로 테스트 데이터 생성 (Fluent API)
  *         User user = fixtures.getDefaultUser();
- *         Family family = fixtures.family()
+ *         Family family = fixtures.families.family()
  *             .name("My Family")
  *             .budget(BigDecimal.valueOf(1000000))
  *             .build();
  *
- *         Category category = fixtures.category(family)
+ *         Category category = fixtures.categories.category(family)
  *             .name("식비")
  *             .build();
  *
@@ -74,10 +77,10 @@ public abstract class AbstractControllerTest {
    *
    * 사용 예시:
    * - fixtures.getDefaultUser() - 기본 사용자
-   * - fixtures.user().email("custom@example.com").build() - 커스텀 사용자
-   * - fixtures.family().owner(user).budget(amount).build() - 가족 생성
-   * - fixtures.category(family).name("식비").build() - 카테고리 생성
-   * - fixtures.expense(family, category).amount(amount).build() - 지출 생성
+   * - fixtures.users.user().email("custom@example.com").build() - 커스텀 사용자
+   * - fixtures.families.family().owner(user).budget(amount).build() - 가족 생성
+   * - fixtures.categories.category(family).name("식비").build() - 카테고리 생성
+   * - fixtures.expenses.expense(family, category).amount(amount).build() - 지출 생성
    */
   protected TestFixtures fixtures;
 

@@ -41,7 +41,7 @@ class IncomeControllerTest extends AbstractControllerTest {
     // Given: TestFixtures로 테스트 데이터 생성
     User user = fixtures.getDefaultUser();
     Family family = fixtures.getDefaultFamily();
-    Category category = fixtures.category(family)
+    Category category = fixtures.categories.category(family)
                                 .name("급여")
                                 .color("#00FF00")
                                 .icon("💰")
@@ -78,13 +78,13 @@ class IncomeControllerTest extends AbstractControllerTest {
     Category category = fixtures.getDefaultCategory();
 
     // 수입 2개 생성
-    fixtures.income(family, category)
+    fixtures.incomes.income(family, category)
             .amount(BigDecimal.valueOf(3000000))
             .description("월급")
             .date(LocalDateTime.now())
             .build();
 
-    fixtures.income(family, category)
+    fixtures.incomes.income(family, category)
             .amount(BigDecimal.valueOf(500000))
             .description("보너스")
             .date(LocalDateTime.now().minusDays(1))
@@ -110,7 +110,7 @@ class IncomeControllerTest extends AbstractControllerTest {
 
     // 25개 수입 생성
     for (int i = 0; i < 25; i++) {
-      fixtures.income(family, category)
+      fixtures.incomes.income(family, category)
               .amount(BigDecimal.valueOf(100000 * (i + 1)))
               .description("수입 " + (i + 1))
               .date(LocalDateTime.now().minusDays(i))
@@ -135,7 +135,7 @@ class IncomeControllerTest extends AbstractControllerTest {
     Family family = fixtures.getDefaultFamily();
     Category category = fixtures.getDefaultCategory();
 
-    Income income = fixtures.income(family, category)
+    Income income = fixtures.incomes.income(family, category)
                             .amount(BigDecimal.valueOf(3000000))
                             .description("월급")
                             .date(LocalDateTime.now())
@@ -159,7 +159,7 @@ class IncomeControllerTest extends AbstractControllerTest {
     Family family = fixtures.getDefaultFamily();
     Category category = fixtures.getDefaultCategory();
 
-    Income income = fixtures.income(family, category)
+    Income income = fixtures.incomes.income(family, category)
                             .amount(BigDecimal.valueOf(3000000))
                             .description("월급")
                             .date(LocalDateTime.now())
@@ -195,7 +195,7 @@ class IncomeControllerTest extends AbstractControllerTest {
     Family family = fixtures.getDefaultFamily();
     Category category = fixtures.getDefaultCategory();
 
-    Income income = fixtures.income(family, category)
+    Income income = fixtures.incomes.income(family, category)
                             .amount(BigDecimal.valueOf(3000000))
                             .description("월급")
                             .date(LocalDateTime.now())

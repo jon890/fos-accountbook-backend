@@ -80,35 +80,35 @@ class ExpenseServiceIntegrationTest {
   private void createTestExpenses() {
     // TestFixtures를 사용하여 5개의 테스트 지출 데이터 생성
     // 2025-01-15 - 식비 30000원
-    fixtures.expense(testFamily, foodCategory)
+    fixtures.expenses.expense(testFamily, foodCategory)
             .amount(BigDecimal.valueOf(30000))
             .description("점심 식사")
             .date(LocalDateTime.of(2025, 1, 15, 12, 0))
             .build();
 
     // 2025-01-20 - 카페 5000원
-    fixtures.expense(testFamily, cafeCategory)
+    fixtures.expenses.expense(testFamily, cafeCategory)
             .amount(BigDecimal.valueOf(5000))
             .description("커피")
             .date(LocalDateTime.of(2025, 1, 20, 15, 0))
             .build();
 
     // 2025-01-25 - 식비 50000원
-    fixtures.expense(testFamily, foodCategory)
+    fixtures.expenses.expense(testFamily, foodCategory)
             .amount(BigDecimal.valueOf(50000))
             .description("저녁 식사")
             .date(LocalDateTime.of(2025, 1, 25, 19, 0))
             .build();
 
     // 2025-02-05 - 교통비 20000원
-    fixtures.expense(testFamily, transportCategory)
+    fixtures.expenses.expense(testFamily, transportCategory)
             .amount(BigDecimal.valueOf(20000))
             .description("택시")
             .date(LocalDateTime.of(2025, 2, 5, 10, 0))
             .build();
 
     // 2025-02-10 - 식비 40000원
-    fixtures.expense(testFamily, foodCategory)
+    fixtures.expenses.expense(testFamily, foodCategory)
             .amount(BigDecimal.valueOf(40000))
             .description("가족 식사")
             .date(LocalDateTime.of(2025, 2, 10, 18, 0))

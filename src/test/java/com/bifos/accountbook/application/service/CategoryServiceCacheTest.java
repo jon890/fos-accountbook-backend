@@ -72,7 +72,7 @@ class CategoryServiceCacheTest {
     // Given: TestFixtures로 데이터 생성
     User testUser = fixtures.getDefaultUser();
     Family testFamily = fixtures.getDefaultFamily();
-    Category category = fixtures.category(testFamily)
+    Category category = fixtures.categories.category(testFamily)
                                 .name("Test Category")
                                 .color("#ff0000")
                                 .icon("🍎")
@@ -134,7 +134,7 @@ class CategoryServiceCacheTest {
     // Given: TestFixtures로 데이터 생성 + 캐시 준비
     User testUser = fixtures.getDefaultUser();
     Family testFamily = fixtures.getDefaultFamily();
-    Category category = fixtures.category(testFamily)
+    Category category = fixtures.categories.category(testFamily)
                                 .name("Original Category")
                                 .color("#ff0000")
                                 .icon("🍎")
@@ -164,7 +164,7 @@ class CategoryServiceCacheTest {
     // Given: TestFixtures로 데이터 생성 + 캐시 준비
     User testUser = fixtures.getDefaultUser();
     Family testFamily = fixtures.getDefaultFamily();
-    Category category = fixtures.category(testFamily)
+    Category category = fixtures.categories.category(testFamily)
                                 .name("To Delete Category")
                                 .color("#ff0000")
                                 .icon("🍎")
@@ -188,7 +188,7 @@ class CategoryServiceCacheTest {
   void createDefaultCategoriesClearsCache() {
     // Given: TestFixtures로 새 가족 생성 + 캐시 준비
     User testUser = fixtures.getDefaultUser();
-    Family newFamily = fixtures.family()
+    Family newFamily = fixtures.families.family()
                                .name("New Family")
                                .owner(testUser)
                                .build();
@@ -211,13 +211,13 @@ class CategoryServiceCacheTest {
   void findByUuidCachedUsesCache() {
     // Given: TestFixtures로 두 개의 카테고리 생성
     Family testFamily = fixtures.getDefaultFamily();
-    Category category1 = fixtures.category(testFamily)
+    Category category1 = fixtures.categories.category(testFamily)
                                  .name("Category 1")
                                  .color("#ff0000")
                                  .icon("🍎")
                                  .build();
 
-    Category category2 = fixtures.category(testFamily)
+    Category category2 = fixtures.categories.category(testFamily)
                                  .name("Category 2")
                                  .color("#00ff00")
                                  .icon("🍏")
@@ -251,7 +251,7 @@ class CategoryServiceCacheTest {
     // Given: TestFixtures로 데이터 생성
     User testUser = fixtures.getDefaultUser();
     Family testFamily = fixtures.getDefaultFamily();
-    Category category = fixtures.category(testFamily)
+    Category category = fixtures.categories.category(testFamily)
                                 .name("Test Category")
                                 .color("#ff0000")
                                 .icon("🍎")

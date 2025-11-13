@@ -99,9 +99,20 @@ public class FamilyAccessAspect {
       }
 
       // 애노테이션 기반 추출 (우선순위 높음)
+      // 중복 애노테이션 감지: 이미 값이 있으면 예외 발생
       if (hasUserUuidAnnotation) {
+        if (userUuid != null) {
+          throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR,
+                                      "@ValidateFamilyAccess: @UserUuid 애노테이션이 여러 파라미터에 중복 사용되었습니다")
+              .addParameter("method", method.getName());
+        }
         userUuid = (CustomUuid) args[i];
       } else if (hasFamilyUuidAnnotation) {
+        if (familyUuid != null) {
+          throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR,
+                                      "@ValidateFamilyAccess: @FamilyUuid 애노테이션이 여러 파라미터에 중복 사용되었습니다")
+              .addParameter("method", method.getName());
+        }
         familyUuid = (CustomUuid) args[i];
       } else {
         // 애노테이션이 없으면 파라미터 이름으로 추출 (하위 호환성)

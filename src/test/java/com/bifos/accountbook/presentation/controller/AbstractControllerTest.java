@@ -96,9 +96,18 @@ public abstract class AbstractControllerTest extends TestFixturesSupport {
     });
   }
 
+  public <T> T doTransaction(TransactionFunction<T> func) {
+    return transactionTemplate.execute(status -> func.apply());
+  }
+
   @FunctionalInterface
   public interface SimpleFunction {
     void apply();
+  }
+
+  @FunctionalInterface
+  public interface TransactionFunction<T> {
+    T apply();
   }
 }
 

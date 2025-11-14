@@ -56,6 +56,7 @@ public interface NotificationJpaRepository extends JpaRepository<Notification, L
 
   @Query("SELECT n FROM Notification n " +
       "WHERE n.familyUuid = :familyUuid " +
+      "AND n.userUuid IS NOT NULL " +
       "AND n.userUuid = :userUuid " +
       "ORDER BY n.createdAt DESC")
   List<Notification> findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(

@@ -145,7 +145,7 @@ public class BudgetAlertService {
     for (FamilyMember member : members) {
       // 중복 체크: 해당 사용자에게 같은 달에 같은 타입의 알림이 이미 있는지 확인
       List<Notification> existingNotifications = notificationRepository
-          .findAllByFamilyUuidAndType(family.getUuid(), alertType);
+          .findByFamilyAndType(family.getUuid(), alertType);
 
       boolean userHasNotification = existingNotifications.stream()
           .anyMatch(n -> n.getUserUuid() != null

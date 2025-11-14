@@ -82,7 +82,7 @@ class BudgetAlertServiceIntegrationTest extends TestFixturesSupport {
     // Then: TransactionalEventListener로 인해 트랜잭션 커밋 후 동기로 처리됨
     // 따라서 별도의 대기 없이 바로 확인 가능
     List<Notification> notifications = notificationRepository
-        .findAllByFamilyUuidOrderByCreatedAtDesc(CustomUuid.from(data.testFamily.getUuid()));
+        .findByFamily(CustomUuid.from(data.testFamily.getUuid()));
 
     assertThat(notifications).isNotEmpty();
     assertThat(notifications).anyMatch(n ->
@@ -111,7 +111,7 @@ class BudgetAlertServiceIntegrationTest extends TestFixturesSupport {
 
     // Then: TransactionalEventListener로 인해 트랜잭션 커밋 후 동기로 처리됨
     List<Notification> notifications = notificationRepository
-        .findAllByFamilyUuidOrderByCreatedAtDesc(CustomUuid.from(data.testFamily.getUuid()));
+        .findByFamily(CustomUuid.from(data.testFamily.getUuid()));
 
     assertThat(notifications).isNotEmpty();
     assertThat(notifications).anyMatch(n ->
@@ -141,7 +141,7 @@ class BudgetAlertServiceIntegrationTest extends TestFixturesSupport {
 
     // Then: TransactionalEventListener로 인해 트랜잭션 커밋 후 동기로 처리됨
     List<Notification> notifications = notificationRepository
-        .findAllByFamilyUuidOrderByCreatedAtDesc(CustomUuid.from(data.testFamily.getUuid()));
+        .findByFamily(CustomUuid.from(data.testFamily.getUuid()));
 
     assertThat(notifications).isNotEmpty();
     assertThat(notifications).anyMatch(n ->
@@ -177,7 +177,7 @@ class BudgetAlertServiceIntegrationTest extends TestFixturesSupport {
     // Then: TransactionalEventListener로 인해 트랜잭션 커밋 후 동기로 처리됨
     // 해당 사용자에게 50% 알림은 여전히 1개만 존재해야 함 (중복 생성되지 않음)
     List<Notification> notifications = notificationRepository
-        .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
+        .findByFamilyAndUser(
             CustomUuid.from(data.testFamily.getUuid()),
             data.testUser.getUuid());
 
@@ -225,13 +225,13 @@ class BudgetAlertServiceIntegrationTest extends TestFixturesSupport {
     // 각 구성원별로 알림이 생성되어야 함
     // 첫 번째 사용자의 알림
     List<Notification> user1Notifications = notificationRepository
-        .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
+        .findByFamilyAndUser(
             CustomUuid.from(data.testFamily.getUuid()),
             data.testUser.getUuid());
 
     // 두 번째 사용자의 알림
     List<Notification> user2Notifications = notificationRepository
-        .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
+        .findByFamilyAndUser(
             CustomUuid.from(data.testFamily.getUuid()),
             otherUser.getUuid());
 
@@ -274,7 +274,7 @@ class BudgetAlertServiceIntegrationTest extends TestFixturesSupport {
     // Then: TransactionalEventListener로 인해 트랜잭션 커밋 후 동기로 처리됨
     // 예산이 설정되지 않은 가족은 알림이 생성되지 않아야 함
     List<Notification> notifications = notificationRepository
-        .findAllByFamilyUuidOrderByCreatedAtDesc(CustomUuid.from(noBudgetFamily.getUuid()));
+        .findByFamily(CustomUuid.from(noBudgetFamily.getUuid()));
 
     assertThat(notifications).isEmpty();
   }
@@ -295,7 +295,7 @@ class BudgetAlertServiceIntegrationTest extends TestFixturesSupport {
     expenseService.createExpense(data.testUser.getUuid(), CustomUuid.from(data.testFamily.getUuid()), request1);
 
     // 50% 알림 생성 확인
-    List<Notification> notificationsAfter50 = notificationRepository.findAllByFamilyUuidOrderByCreatedAtDesc(
+    List<Notification> notificationsAfter50 = notificationRepository.findByFamily(
         CustomUuid.from(data.testFamily.getUuid()));
     assertThat(notificationsAfter50).hasSize(1);
 
@@ -309,7 +309,7 @@ class BudgetAlertServiceIntegrationTest extends TestFixturesSupport {
     expenseService.createExpense(data.testUser.getUuid(), CustomUuid.from(data.testFamily.getUuid()), request2);
 
     // 80% 알림 생성 확인
-    List<Notification> notificationsAfter80 = notificationRepository.findAllByFamilyUuidOrderByCreatedAtDesc(
+    List<Notification> notificationsAfter80 = notificationRepository.findByFamily(
         CustomUuid.from(data.testFamily.getUuid()));
     assertThat(notificationsAfter80).hasSize(2);
 
@@ -325,7 +325,7 @@ class BudgetAlertServiceIntegrationTest extends TestFixturesSupport {
     // Then: TransactionalEventListener로 인해 트랜잭션 커밋 후 동기로 처리됨
     // 3개의 알림이 모두 생성되어야 함
     List<Notification> notifications = notificationRepository
-        .findAllByFamilyUuidOrderByCreatedAtDesc(CustomUuid.from(data.testFamily.getUuid()));
+        .findByFamily(CustomUuid.from(data.testFamily.getUuid()));
 
     assertThat(notifications).hasSize(3);
     assertThat(notifications).anyMatch(n -> n.getType().getCode().equals("BUDGET_50_EXCEEDED"));

@@ -32,27 +32,27 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @Override
-  public List<Notification> findAllByFamilyUuidOrderByCreatedAtDesc(CustomUuid familyUuid) {
+  public List<Notification> findByFamily(CustomUuid familyUuid) {
     return jpaRepository.findAllByFamilyUuidOrderByCreatedAtDesc(familyUuid);
   }
 
   @Override
-  public List<Notification> findAllByUserUuidOrderByCreatedAtDesc(CustomUuid userUuid) {
+  public List<Notification> findByUser(CustomUuid userUuid) {
     return jpaRepository.findAllByUserUuidOrderByCreatedAtDesc(userUuid);
   }
 
   @Override
-  public long countByFamilyUuidAndIsReadFalse(CustomUuid familyUuid) {
+  public long countUnreadByFamily(CustomUuid familyUuid) {
     return jpaRepository.countByFamilyUuidAndIsReadFalse(familyUuid);
   }
 
   @Override
-  public long countByUserUuidAndIsReadFalse(CustomUuid userUuid) {
+  public long countUnreadByUser(CustomUuid userUuid) {
     return jpaRepository.countByUserUuidAndIsReadFalse(userUuid);
   }
 
   @Override
-  public boolean existsByFamilyUuidAndTypeAndYearMonth(
+  public boolean existsByFamilyTypeAndMonth(
       CustomUuid familyUuid,
       NotificationType type,
       String yearMonth) {
@@ -60,13 +60,12 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @Override
-  public List<Notification> findAllByFamilyUuidAndType(CustomUuid familyUuid, NotificationType type) {
+  public List<Notification> findByFamilyAndType(CustomUuid familyUuid, NotificationType type) {
     return jpaRepository.findAllByFamilyUuidAndType(familyUuid, type);
   }
 
   @Override
-  public List<Notification> findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(
-      CustomUuid familyUuid, CustomUuid userUuid) {
+  public List<Notification> findByFamilyAndUser(CustomUuid familyUuid, CustomUuid userUuid) {
     return jpaRepository.findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(familyUuid, userUuid);
   }
 

@@ -34,15 +34,15 @@ public class NotificationService {
    */
   @ValidateFamilyAccess
   @Transactional(readOnly = true)
-  public NotificationListResponse getFamilyNotifications(@UserUuid CustomUuid userUuid, @FamilyUuid CustomUuid familyUuid) {
+  public NotificationListResponse getFamilyNotifications(@UserUuid CustomUuid userUuid,
+                                                         @FamilyUuid CustomUuid familyUuid) {
     // 현재 사용자의 알림 목록 조회 (가족 내에서)
-    List<Notification> notifications = notificationRepository
-        .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(familyUuid, userUuid);
+    List<Notification> notifications = notificationRepository.findByFamilyAndUser(familyUuid, userUuid);
 
     // 현재 사용자의 읽지 않은 알림 수 (가족 내에서)
     long unreadCount = notifications.stream()
-        .filter(n -> !n.getIsRead())
-        .count();
+                                    .filter(n -> !n.getIsRead())
+                                    .count();
 
     List<NotificationResponse> responses = notifications.stream()
                                                         .map(NotificationResponse::from)
@@ -105,7 +105,7 @@ public class NotificationService {
   public void markAllAsRead(@UserUuid CustomUuid userUuid, @FamilyUuid CustomUuid familyUuid) {
     // 현재 사용자의 읽지 않은 알림만 조회
     List<Notification> notifications = notificationRepository
-        .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(familyUuid, userUuid)
+        .findByFamilyAndUser(familyUuid, userUuid)
         .stream()
         .filter(n -> !n.getIsRead())
         .collect(Collectors.toList());
@@ -124,11 +124,11 @@ public class NotificationService {
   public Long getUnreadCount(@UserUuid CustomUuid userUuid, @FamilyUuid CustomUuid familyUuid) {
     // 가족 내에서 현재 사용자의 읽지 않은 알림 수만 조회
     List<Notification> notifications = notificationRepository
-        .findAllByFamilyUuidAndUserUuidOrderByCreatedAtDesc(familyUuid, userUuid);
+        .findByFamilyAndUser(familyUuid, userUuid);
 
     return notifications.stream()
-        .filter(n -> !n.getIsRead())
-        .count();
+                        .filter(n -> !n.getIsRead())
+                        .count();
   }
 }
 

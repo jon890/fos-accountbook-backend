@@ -9,13 +9,13 @@ import com.bifos.accountbook.domain.entity.Notification;
 import com.bifos.accountbook.domain.entity.User;
 import com.bifos.accountbook.domain.repository.FamilyMemberRepository;
 import com.bifos.accountbook.domain.repository.NotificationRepository;
-import com.bifos.accountbook.domain.repository.UserRepository;
 import com.bifos.accountbook.domain.value.CustomUuid;
 import com.bifos.accountbook.domain.value.FamilyMemberStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,9 +38,6 @@ class NotificationControllerTest extends AbstractControllerTest {
 
   @Autowired
   private NotificationRepository notificationRepository;
-
-  @Autowired
-  private UserRepository userRepository;
 
   @Autowired
   private FamilyMemberRepository familyMemberRepository;
@@ -69,30 +66,23 @@ class NotificationControllerTest extends AbstractControllerTest {
    * @return 생성된 다른 사용자
    */
   private User createOtherUserAndAddToFamily(Family family) {
-    User[] otherUser = new User[1];
+    return doTransaction(() -> {
+      // 다른 사용자 생성 (fixtures를 통해 자동으로 저장됨)
+      User otherUser = fixtures.users.getOtherUser();
 
-    doTransactionWithoutResult(() -> {
-      otherUser[0] = userRepository.save(
-          User.builder()
-              .email("other@test.com")
-              .name("다른 사용자")
-              .provider("google")
-              .providerId("test-provider-id-" + System.currentTimeMillis())
-              .build()
-      );
-
+      // 가족 멤버로 추가
       FamilyMember otherMember =
           FamilyMember.builder()
                       .uuid(CustomUuid.generate())
                       .familyUuid(family.getUuid())
-                      .userUuid(otherUser[0].getUuid())
+                      .userUuid(otherUser.getUuid())
                       .status(FamilyMemberStatus.ACTIVE)
                       .build();
 
       familyMemberRepository.save(otherMember);
-    });
 
-    return otherUser[0];
+      return otherUser;
+    });
   }
 
   @Test
@@ -253,8 +243,8 @@ class NotificationControllerTest extends AbstractControllerTest {
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.success").value(true))
            .andExpect(jsonPath("$.data.notifications").isArray())
-           .andExpect(jsonPath("$.data.notifications[*].userUuid").value(org.hamcrest.Matchers.everyItem(
-               org.hamcrest.Matchers.equalTo(testUser.getUuid().getValue()))));
+           .andExpect(jsonPath("$.data.notifications[*].userUuid").value(Matchers.everyItem(
+               Matchers.equalTo(testUser.getUuid().getValue()))));
 
     // Then: otherUser의 알림은 조회되지 않아야 함 (직접 확인)
     List<Notification> testUserNotifications = notificationRepository.findByFamilyAndUser(testFamily.getUuid(), testUser.getUuid());
@@ -272,7 +262,7 @@ class NotificationControllerTest extends AbstractControllerTest {
   @DisplayName("다른 사용자의 알림을 읽으려고 하면 실패한다")
   void markAsRead_Fails_WhenNotificationBelongsToOtherUser() throws Exception {
     // Given: 다른 사용자 생성 및 가족에 추가
-    User otherUser = createOtherUserAndAddToFamily(testFamily);
+    final User otherUser = createOtherUserAndAddToFamily(testFamily);
 
     // testUser와 otherUser 모두에게 알림이 생성되도록 지출 생성 (80% 초과)
     // otherUser가 추가된 후 지출을 생성하면 두 사용자 모두에게 알림이 생성됨
@@ -305,7 +295,7 @@ class NotificationControllerTest extends AbstractControllerTest {
   @DisplayName("한 사용자가 읽어도 다른 사용자의 알림은 영향받지 않는다")
   void markAsRead_DoesNotAffectOtherUserNotifications() throws Exception {
     // Given: 다른 사용자 생성 및 가족에 추가
-    User otherUser = createOtherUserAndAddToFamily(testFamily);
+    final User otherUser = createOtherUserAndAddToFamily(testFamily);
 
     // testUser와 otherUser 모두에게 알림이 생성되도록 지출 생성 (80% 초과)
     // otherUser가 추가된 후 지출을 생성하면 두 사용자 모두에게 알림이 생성됨

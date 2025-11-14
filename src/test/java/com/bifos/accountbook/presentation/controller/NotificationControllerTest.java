@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -242,8 +243,8 @@ class NotificationControllerTest extends AbstractControllerTest {
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.success").value(true))
            .andExpect(jsonPath("$.data.notifications").isArray())
-           .andExpect(jsonPath("$.data.notifications[*].userUuid").value(org.hamcrest.Matchers.everyItem(
-               org.hamcrest.Matchers.equalTo(testUser.getUuid().getValue()))));
+           .andExpect(jsonPath("$.data.notifications[*].userUuid").value(Matchers.everyItem(
+               Matchers.equalTo(testUser.getUuid().getValue()))));
 
     // Then: otherUser의 알림은 조회되지 않아야 함 (직접 확인)
     List<Notification> testUserNotifications = notificationRepository.findByFamilyAndUser(testFamily.getUuid(), testUser.getUuid());

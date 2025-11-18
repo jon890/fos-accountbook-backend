@@ -150,7 +150,7 @@ docker compose restart mysql
 
    ```yaml
    ports:
-     - "13307:3306"  # 호스트:컨테이너
+     - "13307:3306" # 호스트:컨테이너
    ```
 
 2. `application-local.yml`에서도 포트 변경:

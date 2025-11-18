@@ -142,20 +142,22 @@ docker compose restart mysql
 
 ### 포트 충돌
 
-이미 3306 포트를 사용 중인 경우:
+기본적으로 포트 13306을 사용하므로 일반 MySQL 포트(3306)와 충돌하지 않습니다.
+
+다른 포트를 사용해야 하는 경우:
 
 1. `docker/compose.yml`에서 포트 변경:
 
    ```yaml
    ports:
-     - "3307:3306" # 호스트:컨테이너
+     - "13307:3306"  # 호스트:컨테이너
    ```
 
 2. `application-local.yml`에서도 포트 변경:
    ```yaml
    spring:
      datasource:
-       url: jdbc:mysql://localhost:3307/accountbook...
+       url: jdbc:mysql://localhost:13307/accountbook...
    ```
 
 ### 컨테이너 시작 실패

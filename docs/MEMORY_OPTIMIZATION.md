@@ -11,10 +11,11 @@
 - `MaxRAMPercentage`: **75%** 유지 (컨테이너 OOM 방지를 위한 적절한 여유 공간)
 - GC 일시정지 시간 목표 설정 (`-XX:MaxGCPauseMillis=200`)
 - 문자열 중복 제거 활성화 (`-XX:+UseStringDeduplication`)
-- 문자열 중복 제거 통계 출력 (`-XX:+PrintStringDeduplicationStatistics`) - 모니터링용
+- 문자열 중복 제거 통계 출력 (`-Xlog:gc+stringdedup=debug`) - 모니터링용 (Java 9+ 통합 로깅 프레임워크)
 - 참고:
   - Java 21의 기본 GC는 이미 G1GC이므로 명시적으로 지정 불필요
   - `UseContainerSupport`는 Java 10+부터 기본 활성화되어 명시 불필요 (Java 21에서 제거됨)
+  - `PrintStringDeduplicationStatistics`는 Java 9+에서 제거됨, `-Xlog:gc+stringdedup=debug` 사용
 
 **설명:**
 
@@ -181,7 +182,7 @@
 # 다만 OOM 방지를 위해 최소 70% 이상 유지 권장
 
 -XX:+UseStringDeduplication  # 이미 적용됨
--XX:+PrintStringDeduplicationStatistics  # 이미 적용됨 (통계 출력)
+-Xlog:gc+stringdedup=debug  # 이미 적용됨 (통계 출력, Java 9+ 통합 로깅 프레임워크)
 -XX:+OptimizeStringConcat  # 문자열 연결 최적화
 
 # GC 선택 (참고: Java 21 기본값은 G1GC)

@@ -22,7 +22,7 @@
 - Railway는 **실제 사용한 메모리만 과금**하므로, `MaxRAMPercentage`는 OOM 방지 목적
 - 75% 설정으로 컨테이너 메모리(3GB)의 2.25GB 사용 가능, 25% 여유 공간 확보
 - 실제 사용량이 적으면 그만큼만 과금되므로 비용 절감 효과
-- `PrintStringDeduplicationStatistics`: GC 로그에 문자열 중복 제거 통계 출력하여 효과 모니터링 가능
+- `-Xlog:gc+stringdedup=debug`: GC 로그에 문자열 중복 제거 통계 출력하여 효과 모니터링 가능 (Java 9+ 통합 로깅 프레임워크)
 
 **예상 효과:**
 
@@ -144,32 +144,19 @@
 - 힙 메모리 사용량
 - GC 발생 빈도
 - OutOfMemoryError 발생 여부
-- **문자열 중복 제거 통계** (`PrintStringDeduplicationStatistics` 활성화 시)
+- **문자열 중복 제거 통계** (`-Xlog:gc+stringdedup=debug` 활성화 시)
 
-**문자열 중복 제거 통계 예시:**
+**문자열 중복 제거 통계 확인:**
 
-```
-[GC concurrent-string-deduplication, 1234.5 ms]
-   [Last Exec: 1234.5 ms, Idle: 0.0 ms, Blocked: 0.0 ms]
-      [Inspected:          1234567]
-         [Skipped:              0(  0.0%)]
-         [Hashed:          1234567(100.0%)]
-         [Known:                0(  0.0%)]
-         [New:             1234567(100.0%)]
-      [Deduplicated:        123456( 10.0%)]
-         [Young:            12345( 10.0%)]
-         [Old:             111111( 90.0%)]
-      [GC Workers: 8]
-         [Processed:       1234567]
-         [Deduplicated:     123456( 10.0%)]
-         [Skipped:              0(  0.0%)]
-```
+- Java 9+ 통합 로깅 프레임워크 사용 (`-Xlog:gc+stringdedup=debug`)
+- GC 로그에서 `stringdedup` 관련 메시지 확인
+- Railway 로그에서 문자열 중복 제거 관련 정보 확인
 
 **통계 해석:**
 
-- `Inspected`: 중복 제거를 위해 검사한 문자열 수
-- `Deduplicated`: 실제로 중복 제거된 문자열 수 (비율이 높을수록 효과적)
-- `Young/Old`: Young/Old 세대에서 중복 제거된 문자열 수
+- 로그에서 문자열 중복 제거 관련 정보 확인
+- 중복 제거 비율이 높을수록 효과적
+- 일반적으로 5% 이상이면 효과적
 
 ## 📝 추가 최적화 옵션
 

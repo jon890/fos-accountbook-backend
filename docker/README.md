@@ -20,7 +20,7 @@ docker/
 
 - **이미지**: MySQL 9.4 (Railway 프로덕션과 동일)
 - **컨테이너명**: fos-accountbook-mysql
-- **포트**: 3306 (호스트) → 3306 (컨테이너)
+- **포트**: 13306 (호스트) → 3306 (컨테이너) - 일반 MySQL 포트(3306)와 충돌 방지
 - **네트워크**: fos-accountbook-network
 - **볼륨**:
   - `mysql_data`: 데이터 영속성
@@ -37,7 +37,7 @@ Docker Compose는 별도의 환경변수 파일 없이 작동합니다. 모든 �
 - **사용자**: accountbook_user
 - **비밀번호**: accountbook_password
 - **Root 비밀번호**: rootpassword
-- **포트**: 3306
+- **포트**: 13306 (호스트) - 일반 MySQL 포트(3306)와 충돌 방지
 
 Spring Boot 애플리케이션의 로컬 설정(`application-local.yml`)도 동일한 값을 사용합니다.
 
@@ -101,13 +101,13 @@ docker compose -f docker/compose.yml exec mysql mysql -u accountbook_user -p acc
 #### 로컬 MySQL 클라이언트로 접속
 
 ```bash
-mysql -h localhost -P 3306 -u accountbook_user -p accountbook
+mysql -h localhost -P 13306 -u accountbook_user -p accountbook
 ```
 
 #### MySQL Workbench 또는 DBeaver로 접속
 
 - **Host**: localhost
-- **Port**: 3306
+- **Port**: 13306 (일반 MySQL 포트 3306과 충돌 방지)
 - **Database**: accountbook
 - **Username**: accountbook_user
 - **Password**: accountbook_password

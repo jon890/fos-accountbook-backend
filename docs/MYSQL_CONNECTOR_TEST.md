@@ -130,18 +130,22 @@ docker ps -a
 docker compose restart mysql
 ```
 
-### 포트 충돌 (3306 already in use)
+### 포트 충돌
+
+기본적으로 포트 13306을 사용하므로 일반 MySQL 포트(3306)와 충돌하지 않습니다.
+
+다른 포트를 사용해야 하는 경우:
 
 ```bash
 # 기존 MySQL 프로세스 확인
-lsof -i :3306
+lsof -i :13306
 
 # 포트 변경 (docker/compose.yml)
 ports:
-  - "3307:3306"  # 3307로 변경
+  - "13307:3306"  # 13307로 변경
 
-# application-test-mysql.yml도 수정
-url: jdbc:mysql://localhost:3307/accountbook?...
+# application-local.yml도 수정
+url: jdbc:mysql://localhost:13307/accountbook?...
 ```
 
 ### Flyway 마이그레이션 실패

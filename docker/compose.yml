@@ -10,7 +10,7 @@ services:
       MYSQL_PASSWORD: accountbook_password
       TZ: UTC
     ports:
-      - "3306:3306"
+      - "13306:3306"  # 호스트 포트 13306 → 컨테이너 포트 3306 (일반 MySQL 포트와 충돌 방지)
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d

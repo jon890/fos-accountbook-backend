@@ -37,6 +37,7 @@ spring-boot-starter-flyway = { module = "org.springframework.boot:spring-boot-st
 
 # Database
 mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql-connector" }
+flyway-mysql = { module = "org.flywaydb:flyway-mysql" }
 
 # SQL Logging
 p6spy-spring-boot-starter = { module = "com.github.gavlyukovskiy:p6spy-spring-boot-starter", version.ref = "p6spy" }

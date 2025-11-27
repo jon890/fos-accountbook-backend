@@ -54,9 +54,6 @@ springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openap
 # Lombok
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 
-# Hibernate
-hibernate-metamodel-generator = { module = "org.hibernate.orm:hibernate-metamodel-generator" }
-
 # QueryDSL
 querydsl-jpa = { module = "com.querydsl:querydsl-jpa", version.ref = "querydsl" }
 querydsl-apt = { module = "com.querydsl:querydsl-apt", version.ref = "querydsl" }

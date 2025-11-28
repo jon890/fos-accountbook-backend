@@ -1,14 +1,17 @@
 package com.bifos.accountbook.config.security;
 
+import com.bifos.accountbook.domain.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
-import javax.crypto.SecretKey;
 import io.jsonwebtoken.security.SecureDigestAlgorithm;
+import java.nio.charset.StandardCharsets;
+import java.util.function.Function;
+import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,6 +21,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class AbstractJwtTokenProvider {
+
+  protected JwtParser getJwtParser() {
+    return Jwts.parser()
+               .verifyWith(getSigningKey())
+               .build();
+  }
 
   /**
    * JWT 서명에 사용할 비밀키를 반환합니다.
@@ -54,6 +63,8 @@ public abstract class AbstractJwtTokenProvider {
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
+  protected abstract Function<User, String> toSubjectConverter();
+
   /**
    * 토큰 검증
    *
@@ -62,10 +73,7 @@ public abstract class AbstractJwtTokenProvider {
    */
   public boolean validateToken(String token) {
     try {
-      Jwts.parser()
-          .verifyWith(getSigningKey())
-          .build()
-          .parseSignedClaims(token);
+      getJwtParser().parseSignedClaims(token);
       return true;
     } catch (SecurityException e) {
       log.debug("Invalid JWT signature: {}", e.getMessage());
@@ -89,11 +97,8 @@ public abstract class AbstractJwtTokenProvider {
    */
   protected Claims getClaimsFromToken(String token) {
     try {
-      return Jwts.parser()
-                 .verifyWith(getSigningKey())
-                 .build()
-                 .parseSignedClaims(token)
-                 .getPayload();
+      return getJwtParser().parseSignedClaims(token)
+                           .getPayload();
     } catch (Exception e) {
       log.debug("Failed to extract claims from token: {}", e.getMessage());
       return null;

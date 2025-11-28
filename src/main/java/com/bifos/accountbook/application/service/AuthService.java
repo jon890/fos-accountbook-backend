@@ -10,10 +10,8 @@ import com.bifos.accountbook.domain.value.CustomUuid;
 import com.bifos.accountbook.domain.value.UserStatus;
 import com.bifos.accountbook.presentation.dto.auth.AuthResponse;
 import com.bifos.accountbook.presentation.dto.auth.SocialLoginRequest;
-import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,17 +90,15 @@ public class AuthService {
    * JWT의 sub (subject)에는 user.uuid를 사용하여 내부 ID 노출을 방지합니다.
    */
   private AuthResponse generateAuthResponse(User user) {
-    var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-
     String userUuid = user.getUuid().getValue();
     AccessToken accessToken = jwtTokenProvider.generateToken(user);
-    String refreshToken = jwtTokenProvider.generateRefreshToken(userUuid);
+    String refreshToken = jwtTokenProvider.generateRefreshToken(user);
 
     return AuthResponse.builder()
                        .accessToken(accessToken.getToken())
                        .refreshToken(refreshToken)
                        .issuedAt(accessToken.getIssuedAt())
-                       .issuedAt(accessToken.getExpiresAt())
+                       .expiredAt(accessToken.getExpiresAt())
                        .user(AuthResponse.UserInfo.builder()
                                                   .id(user.getId().toString())
                                                   .uuid(userUuid)

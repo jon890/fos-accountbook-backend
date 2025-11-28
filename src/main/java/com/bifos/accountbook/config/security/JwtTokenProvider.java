@@ -1,13 +1,12 @@
 package com.bifos.accountbook.config.security;
 
 import com.bifos.accountbook.domain.entity.User;
+import com.bifos.accountbook.utils.TimeUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SecureDigestAlgorithm;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ public class JwtTokenProvider extends AbstractJwtTokenProvider {
 
   private final JwtProperties jwtProperties;
 
-
   @Override
   protected SecretKey getSigningKey() {
     return createSigningKey(jwtProperties.getSecret());
@@ -33,16 +31,17 @@ public class JwtTokenProvider extends AbstractJwtTokenProvider {
     return Jwts.SIG.HS512;
   }
 
+  @Override
+  protected Function<User, String> toSubjectConverter() {
+    return user -> user.getUuid().getValue();
+  }
+
   public AccessToken generateToken(User user) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + jwtProperties.getExpiration());
 
-    LocalDateTime nowLocalDateTime = LocalDateTime.ofInstant(now.toInstant(), ZoneId.systemDefault());
-    LocalDateTime expiryLocalDateTime = nowLocalDateTime.plus(jwtProperties.getExpiration(),
-                                                              TimeUnit.MILLISECONDS.toChronoUnit());
-
     final String token = Jwts.builder()
-                             .subject(user.getUuid().getValue())
+                             .subject(toSubjectConverter().apply(user))
                              .issuedAt(now)
                              .expiration(expiryDate)
                              .signWith(getSigningKey(), getAlgorithm())
@@ -50,20 +49,20 @@ public class JwtTokenProvider extends AbstractJwtTokenProvider {
 
     return AccessToken.builder()
                       .token(token)
-                      .issuedAt(LocalDateTime.ofInstant(now.toInstant(), ZoneId.systemDefault()))
-                      .expiresAt(expiryLocalDateTime)
+                      .issuedAt(TimeUtils.toLocalDateTime(now))
+                      .expiresAt(TimeUtils.toLocalDateTime(expiryDate))
                       .build();
   }
 
   /**
-   * Refresh 토큰 생성 (HS512 알고리즘 사용)
+   * Refresh 토큰 생성
    */
-  public String generateRefreshToken(String userId) {
+  public String generateRefreshToken(User user) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + jwtProperties.getRefreshExpiration());
 
     return Jwts.builder()
-               .subject(userId)
+               .subject(toSubjectConverter().apply(user))
                .issuedAt(now)
                .expiration(expiryDate)
                .signWith(getSigningKey(), getAlgorithm())

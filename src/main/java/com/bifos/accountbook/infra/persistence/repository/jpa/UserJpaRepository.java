@@ -27,10 +27,6 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
   @Query("SELECT u FROM User u WHERE u.uuid = :uuid AND u.status = 'ACTIVE'")
   Optional<User> findActiveByUuid(@Param("uuid") CustomUuid uuid);
 
-  /**
-   * 활성 상태의 사용자만 이메일로 조회
-   */
-  @Query("SELECT u FROM User u WHERE u.email = :email AND u.status = 'ACTIVE'")
-  Optional<User> findActiveByEmail(@Param("email") String email);
+  boolean existsByEmail(String email);
 }
 

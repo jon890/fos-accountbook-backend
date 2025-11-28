@@ -39,4 +39,6 @@ public interface UserRepository {
    * Provider와 ProviderId 존재 여부 확인
    */
   boolean existsByProviderAndProviderId(String provider, String providerId);
+
+  boolean existsByEmail(String email);
 }

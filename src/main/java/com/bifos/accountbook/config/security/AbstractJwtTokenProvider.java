@@ -1,4 +1,4 @@
-package com.bifos.accountbook.infra.security;
+package com.bifos.accountbook.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * JWT 토큰 검증/추출을 위한 추상 클래스
- *
  * JwtTokenProvider와 NextAuthTokenProvider의 공통 로직을 제공합니다.
  * 하위 클래스는 getSecretKey()를 구현하여 각자의 비밀키를 제공합니다.
  */
@@ -108,27 +107,4 @@ public abstract class AbstractJwtTokenProvider {
     Claims claims = getClaimsFromToken(token);
     return claims != null ? claims.getSubject() : null;
   }
-
-  /**
-   * 토큰에서 이메일 추출
-   *
-   * @param token JWT 토큰
-   * @return 이메일 주소, 추출 실패 시 null
-   */
-  public String getEmailFromToken(String token) {
-    Claims claims = getClaimsFromToken(token);
-    return claims != null ? claims.get("email", String.class) : null;
-  }
-
-  /**
-   * 토큰에서 사용자 이름 추출
-   *
-   * @param token JWT 토큰
-   * @return 사용자 이름, 추출 실패 시 null
-   */
-  public String getNameFromToken(String token) {
-    Claims claims = getClaimsFromToken(token);
-    return claims != null ? claims.get("name", String.class) : null;
-  }
-
 }

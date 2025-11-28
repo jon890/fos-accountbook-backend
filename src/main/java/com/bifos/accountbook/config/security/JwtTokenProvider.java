@@ -1,4 +1,4 @@
-package com.bifos.accountbook.infra.security;
+package com.bifos.accountbook.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

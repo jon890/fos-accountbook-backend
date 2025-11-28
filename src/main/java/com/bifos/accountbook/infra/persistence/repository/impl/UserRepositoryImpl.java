@@ -47,5 +47,10 @@ public class UserRepositoryImpl implements UserRepository {
   public boolean existsByProviderAndProviderId(String provider, String providerId) {
     return jpaRepository.existsByProviderAndProviderId(provider, providerId);
   }
+
+  @Override
+  public boolean existsByEmail(String email) {
+    return jpaRepository.existsByEmail(email);
+  }
 }
 

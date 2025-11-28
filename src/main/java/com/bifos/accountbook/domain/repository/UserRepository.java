@@ -16,11 +16,6 @@ public interface UserRepository {
   User save(User user);
 
   /**
-   * ID로 사용자 조회
-   */
-  Optional<User> findById(Long id);
-
-  /**
    * 이메일로 사용자 조회
    */
   Optional<User> findByEmail(String email);
@@ -39,6 +34,4 @@ public interface UserRepository {
    * Provider와 ProviderId 존재 여부 확인
    */
   boolean existsByProviderAndProviderId(String provider, String providerId);
-
-  boolean existsByEmail(String email);
 }

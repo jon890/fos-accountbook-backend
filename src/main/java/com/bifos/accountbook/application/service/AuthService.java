@@ -26,17 +26,13 @@ public class AuthService {
 
 
   /**
-   * 소셜 로그인 (이메일로 사용자 조회 후 JWT 발급)
+   * 소셜 로그인
    */
   @Transactional
   public AuthResponse socialLogin(SocialLoginRequest request) {
     User user;
 
-    if (userRepository.existsByEmail(request.getEmail())) {
-      user = userRepository.findByEmail(request.getEmail())
-                           .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND)
-                               .addParameter("email", request.getEmail()));
-    } else if (userRepository.existsByProviderAndProviderId(request.getProvider(), request.getProviderId())) {
+    if (userRepository.existsByProviderAndProviderId(request.getProvider(), request.getProviderId())) {
       user = userRepository.findByProviderAndProviderId(request.getProvider(), request.getProviderId())
                            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND)
                                .addParameter("provider", request.getProvider())

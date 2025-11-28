@@ -24,11 +24,6 @@ public class UserRepositoryImpl implements UserRepository {
   }
 
   @Override
-  public Optional<User> findById(Long id) {
-    return jpaRepository.findById(id);
-  }
-
-  @Override
   public Optional<User> findByEmail(String email) {
     return jpaRepository.findByEmail(email);
   }
@@ -46,11 +41,6 @@ public class UserRepositoryImpl implements UserRepository {
   @Override
   public boolean existsByProviderAndProviderId(String provider, String providerId) {
     return jpaRepository.existsByProviderAndProviderId(provider, providerId);
-  }
-
-  @Override
-  public boolean existsByEmail(String email) {
-    return jpaRepository.existsByEmail(email);
   }
 }
 

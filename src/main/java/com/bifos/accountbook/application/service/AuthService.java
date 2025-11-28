@@ -2,11 +2,11 @@ package com.bifos.accountbook.application.service;
 
 import com.bifos.accountbook.application.exception.BusinessException;
 import com.bifos.accountbook.application.exception.ErrorCode;
+import com.bifos.accountbook.config.security.JwtTokenProvider;
 import com.bifos.accountbook.domain.entity.User;
 import com.bifos.accountbook.domain.repository.UserRepository;
 import com.bifos.accountbook.domain.value.CustomUuid;
 import com.bifos.accountbook.domain.value.UserStatus;
-import com.bifos.accountbook.config.security.JwtTokenProvider;
 import com.bifos.accountbook.presentation.dto.auth.AuthResponse;
 import com.bifos.accountbook.presentation.dto.auth.SocialLoginRequest;
 import java.util.Collections;
@@ -29,7 +29,7 @@ public class AuthService {
   /**
    * 소셜 로그인 (이메일로 사용자 조회 후 JWT 발급)
    */
-  @Transactional(readOnly = true)
+  @Transactional
   public AuthResponse socialLogin(SocialLoginRequest request) {
     User user;
 

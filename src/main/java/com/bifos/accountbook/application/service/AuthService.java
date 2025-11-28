@@ -2,6 +2,7 @@ package com.bifos.accountbook.application.service;
 
 import com.bifos.accountbook.application.exception.BusinessException;
 import com.bifos.accountbook.application.exception.ErrorCode;
+import com.bifos.accountbook.config.security.AccessToken;
 import com.bifos.accountbook.config.security.JwtTokenProvider;
 import com.bifos.accountbook.domain.entity.User;
 import com.bifos.accountbook.domain.repository.UserRepository;
@@ -94,14 +95,14 @@ public class AuthService {
     var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
     String userUuid = user.getUuid().getValue();
-    String accessToken = jwtTokenProvider.generateToken(userUuid, user.getEmail(), authorities);
+    AccessToken accessToken = jwtTokenProvider.generateToken(user);
     String refreshToken = jwtTokenProvider.generateRefreshToken(userUuid);
 
     return AuthResponse.builder()
-                       .accessToken(accessToken)
+                       .accessToken(accessToken.getToken())
                        .refreshToken(refreshToken)
-                       .tokenType("Bearer")
-                       .expiresIn(86400L) // 24시간 (초 단위)
+                       .issuedAt(accessToken.getIssuedAt())
+                       .issuedAt(accessToken.getExpiresAt())
                        .user(AuthResponse.UserInfo.builder()
                                                   .id(user.getId().toString())
                                                   .uuid(userUuid)

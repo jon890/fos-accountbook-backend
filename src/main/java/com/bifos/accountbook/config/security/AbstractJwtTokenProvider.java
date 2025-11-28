@@ -8,6 +8,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
+import io.jsonwebtoken.security.SecureDigestAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -24,6 +25,8 @@ public abstract class AbstractJwtTokenProvider {
    * @return SecretKey
    */
   protected abstract SecretKey getSigningKey();
+
+  protected abstract SecureDigestAlgorithm<SecretKey, SecretKey> getAlgorithm();
 
   /**
    * 문자열 비밀키를 SecretKey 객체로 변환합니다.

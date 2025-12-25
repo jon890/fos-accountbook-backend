@@ -179,7 +179,7 @@ public class CategoryService {
     familyValidationService.validateFamilyAccess(userUuid, category.getFamilyUuid());
 
     // 캐시 무효화를 위해 familyUuid 저장
-    String familyUuidStr = category.getFamilyUuid().getValue();
+    final String familyUuidStr = category.getFamilyUuid().getValue();
 
     // 이름 변경 시 중복 확인
     if (request.getName() != null && !request.getName().equals(category.getName())) {
@@ -228,7 +228,7 @@ public class CategoryService {
     familyValidationService.validateFamilyAccess(userUuid, category.getFamilyUuid());
 
     // 캐시 무효화를 위해 familyUuid 저장
-    String familyUuidStr = category.getFamilyUuid().getValue();
+    final String familyUuidStr = category.getFamilyUuid().getValue();
 
     // 기본 카테고리는 삭제 불가
     if (category.isDefault()) {

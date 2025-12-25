@@ -2,8 +2,12 @@
 ALTER TABLE categories
 ADD COLUMN is_default BOOLEAN NOT NULL DEFAULT FALSE;
 
--- 기존 가족들에게 '미분류' 카테고리 생성 (MySQL 8.0+ UUID() 사용)
--- 이미 '미분류'라는 이름의 카테고리가 있으면 생성하지 않음 (중복 방지)
+-- 1. 기존에 이미 존재하는 '미분류' 카테고리를 기본 카테고리로 지정
+UPDATE categories
+SET is_default = TRUE
+WHERE name = '미분류';
+
+-- 2. '미분류' 카테고리가 없는 가족들에게 새로 생성 (MySQL 8.0+ UUID() 사용)
 INSERT INTO categories (uuid, family_uuid, name, color, icon, status, is_default, exclude_from_budget, created_at, updated_at)
 SELECT 
     UUID(),

@@ -54,7 +54,7 @@ logs/
 *.zip
 *.tar.gz
 *.rar
-
-# claude, oh-my-claude-code
+# claude
 .claude/settings.local.json
+.claude/worktrees
 .omc

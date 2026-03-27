@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RecurringExpenseService {
 
   private final RecurringExpenseRepository recurringExpenseRepository;
@@ -65,7 +66,6 @@ public class RecurringExpenseService {
    * 가족의 고정지출 목록 조회
    */
   @ValidateFamilyAccess
-  @Transactional(readOnly = true)
   public List<RecurringExpenseResponse> getRecurringExpenses(@UserUuid CustomUuid userUuid,
                                                              @FamilyUuid CustomUuid familyUuid) {
     return recurringExpenseRepository.findAllActiveByFamilyUuid(familyUuid)
@@ -90,7 +90,7 @@ public class RecurringExpenseService {
                                                                           recurringExpenseUuid.getValue()));
 
     if (!recurringExpense.getFamilyUuid().equals(familyUuid)) {
-      throw new BusinessException(ErrorCode.ACCESS_DENIED)
+      throw new BusinessException(ErrorCode.RECURRING_EXPENSE_NOT_FOUND)
           .addParameter("uuid", recurringExpenseUuid.getValue());
     }
 
@@ -123,7 +123,7 @@ public class RecurringExpenseService {
                                                                           recurringExpenseUuid.getValue()));
 
     if (!recurringExpense.getFamilyUuid().equals(familyUuid)) {
-      throw new BusinessException(ErrorCode.ACCESS_DENIED)
+      throw new BusinessException(ErrorCode.RECURRING_EXPENSE_NOT_FOUND)
           .addParameter("uuid", recurringExpenseUuid.getValue());
     }
 

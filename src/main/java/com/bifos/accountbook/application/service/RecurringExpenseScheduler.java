@@ -1,22 +1,13 @@
 package com.bifos.accountbook.application.service;
 
-import com.bifos.accountbook.application.event.ExpenseCreatedEvent;
-import com.bifos.accountbook.domain.entity.Expense;
-import com.bifos.accountbook.domain.entity.Family;
 import com.bifos.accountbook.domain.entity.RecurringExpense;
-import com.bifos.accountbook.domain.repository.ExpenseRepository;
-import com.bifos.accountbook.domain.repository.FamilyRepository;
 import com.bifos.accountbook.domain.repository.RecurringExpenseRepository;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 고정지출 스케줄러
@@ -28,16 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecurringExpenseScheduler {
 
   private final RecurringExpenseRepository recurringExpenseRepository;
-  private final ExpenseRepository expenseRepository;
-  private final FamilyRepository familyRepository;
-  private final ApplicationEventPublisher eventPublisher;
+  private final RecurringExpenseRegistrar recurringExpenseRegistrar;
 
   /**
    * 매일 자정(00:00)에 실행
    * 오늘 날짜(dayOfMonth)에 해당하는 고정지출을 일괄 등록합니다.
    */
-  @Scheduled(cron = "0 0 0 * * *")
-  @Transactional
+  @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
   public void registerRecurringExpenses() {
     LocalDate today = LocalDate.now();
     int dayOfMonth = today.getDayOfMonth();
@@ -60,7 +48,7 @@ public class RecurringExpenseScheduler {
 
     for (RecurringExpense recurring : targets) {
       try {
-        boolean registered = registerIfNotExists(recurring, today);
+        boolean registered = recurringExpenseRegistrar.registerIfNotExists(recurring, today);
         if (registered) {
           successCount++;
         } else {
@@ -74,51 +62,5 @@ public class RecurringExpenseScheduler {
 
     log.info("[RecurringExpenseScheduler] 완료 - 등록: {}건, 스킵(이미 등록): {}건", successCount, skipCount);
   }
-
-  /**
-   * 이미 해당 월에 등록된 경우 스킵, 아니면 지출 생성
-   *
-   * @return true: 새로 등록, false: 이미 존재하여 스킵
-   */
-  private boolean registerIfNotExists(RecurringExpense recurring, LocalDate today) {
-    boolean alreadyExists = expenseRepository.existsByRecurringExpenseUuidAndYearMonth(
-        recurring.getUuid(), today.getYear(), today.getMonthValue());
-
-    if (alreadyExists) {
-      log.debug("[RecurringExpenseScheduler] 이미 등록된 고정지출 스킵 - uuid: {}, 연월: {}-{}",
-          recurring.getUuid().getValue(), today.getYear(), today.getMonthValue());
-      return false;
-    }
-
-    Family family = familyRepository.findByUuid(recurring.getFamilyUuid())
-                                    .orElseThrow(() -> new IllegalStateException(
-                                        "가족을 찾을 수 없습니다: " + recurring.getFamilyUuid().getValue()));
-
-    LocalDateTime expenseDate = LocalDateTime.of(today, LocalTime.MIDNIGHT);
-
-    Expense expense = family.addExpense(
-        recurring.getAmount(),
-        recurring.getCategoryUuid(),
-        recurring.getUserUuid(),
-        recurring.getDescription(),
-        expenseDate
-    );
-    expense.setExcludeFromBudget(recurring.isExcludeFromBudget());
-    expense.setRecurringExpenseUuid(recurring.getUuid());
-
-    expense = expenseRepository.save(expense);
-
-    eventPublisher.publishEvent(new ExpenseCreatedEvent(
-        expense.getUuid(),
-        expense.getFamilyUuid(),
-        expense.getUserUuid(),
-        expense.getAmount(),
-        expense.getDate()
-    ));
-
-    log.info("[RecurringExpenseScheduler] 고정지출 등록 완료 - recurringUuid: {}, expenseUuid: {}",
-        recurring.getUuid().getValue(), expense.getUuid().getValue());
-
-    return true;
-  }
 }
+

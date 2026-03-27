@@ -156,9 +156,9 @@ public class Expense {
   }
 
   /**
-   * 고정지출 UUID 설정 (스케줄러 생성 지출에만 사용)
+   * 고정지출 UUID 연결 (스케줄러 생성 지출에만 사용)
    */
-  public void setRecurringExpenseUuid(CustomUuid recurringExpenseUuid) {
+  public void assignRecurringExpense(CustomUuid recurringExpenseUuid) {
     this.recurringExpenseUuid = recurringExpenseUuid;
   }
 

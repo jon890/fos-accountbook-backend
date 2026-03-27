@@ -2,11 +2,15 @@ package com.bifos.accountbook.application.dto.expense;
 
 import com.bifos.accountbook.domain.entity.RecurringExpense;
 import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RecurringExpenseResponse {
 
   private String uuid;

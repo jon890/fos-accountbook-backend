@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FamilyService {
 
   private final FamilyRepository familyRepository;
@@ -84,7 +85,6 @@ public class FamilyService {
   /**
    * 사용자가 속한 가족 목록 조회
    */
-  @Transactional(readOnly = true)
   public List<FamilyResponse> getUserFamilies(CustomUuid userUuid) {
     User user = userService.getUser(userUuid);
 
@@ -114,7 +114,6 @@ public class FamilyService {
    * 가족 상세 조회
    */
   @ValidateFamilyAccess
-  @Transactional(readOnly = true)
   public FamilyResponse getFamily(@UserUuid CustomUuid userUuid, @FamilyUuid CustomUuid familyUuid) {
     Family family = familyRepository.findActiveByUuid(familyUuid)
                                     .orElseThrow(() -> new BusinessException(ErrorCode.FAMILY_NOT_FOUND)

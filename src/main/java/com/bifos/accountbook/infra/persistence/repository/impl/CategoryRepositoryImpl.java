@@ -71,5 +71,10 @@ public class CategoryRepositoryImpl implements CategoryRepository {
   public int countByFamilyUuid(CustomUuid familyUuid) {
     return jpaRepository.countByFamilyUuid(familyUuid);
   }
+
+  @Override
+  public void softDeleteAllByFamilyUuid(CustomUuid familyUuid) {
+    jpaRepository.softDeleteAllByFamilyUuid(familyUuid);
+  }
 }
 

@@ -39,9 +39,10 @@ public interface FamilyMemberJpaRepository extends JpaRepository<FamilyMember, L
   @Query("SELECT COUNT(fm) FROM FamilyMember fm WHERE fm.userUuid = :userUuid AND fm.status = com.bifos.accountbook.domain.value.FamilyMemberStatus.ACTIVE")
   int countByUserUuid(@Param("userUuid") CustomUuid userUuid);
 
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Query("UPDATE FamilyMember fm SET fm.status = com.bifos.accountbook.domain.value.FamilyMemberStatus.LEFT "
-      + "WHERE fm.familyUuid = :familyUuid")
+      + "WHERE fm.familyUuid = :familyUuid "
+      + "AND fm.status = com.bifos.accountbook.domain.value.FamilyMemberStatus.ACTIVE")
   void softDeleteAllByFamilyUuid(@Param("familyUuid") CustomUuid familyUuid);
 }
 

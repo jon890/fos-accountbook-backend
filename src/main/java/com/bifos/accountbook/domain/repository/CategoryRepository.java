@@ -45,4 +45,9 @@ public interface CategoryRepository {
    * 가족 UUID로 카테고리 개수 조회 (삭제되지 않은)
    */
   int countByFamilyUuid(CustomUuid familyUuid);
+
+  /**
+   * 가족 삭제 시 해당 가족의 모든 카테고리 Soft Delete
+   */
+  void softDeleteAllByFamilyUuid(CustomUuid familyUuid);
 }

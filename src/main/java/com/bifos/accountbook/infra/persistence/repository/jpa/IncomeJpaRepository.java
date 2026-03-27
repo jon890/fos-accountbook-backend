@@ -54,9 +54,10 @@ public interface IncomeJpaRepository extends JpaRepository<Income, Long> {
       @Param("endDate") LocalDateTime endDate,
       Pageable pageable);
 
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Query("UPDATE Income i SET i.status = com.bifos.accountbook.domain.value.IncomeStatus.DELETED "
-      + "WHERE i.family.uuid = :familyUuid")
+      + "WHERE i.family.uuid = :familyUuid "
+      + "AND i.status <> com.bifos.accountbook.domain.value.IncomeStatus.DELETED")
   void softDeleteAllByFamilyUuid(@Param("familyUuid") CustomUuid familyUuid);
 }
 

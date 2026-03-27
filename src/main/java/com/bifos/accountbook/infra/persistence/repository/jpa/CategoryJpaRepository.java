@@ -5,6 +5,7 @@ import com.bifos.accountbook.domain.value.CustomUuid;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -32,5 +33,11 @@ public interface CategoryJpaRepository extends JpaRepository<Category, Long> {
 
   @Query("SELECT COUNT(c) FROM Category c WHERE c.familyUuid = :familyUuid AND c.status = com.bifos.accountbook.domain.value.CategoryStatus.ACTIVE")
   int countByFamilyUuid(@Param("familyUuid") CustomUuid familyUuid);
+
+  @Modifying(clearAutomatically = true)
+  @Query("UPDATE Category c SET c.status = com.bifos.accountbook.domain.value.CategoryStatus.DELETED "
+      + "WHERE c.familyUuid = :familyUuid "
+      + "AND c.status <> com.bifos.accountbook.domain.value.CategoryStatus.DELETED")
+  void softDeleteAllByFamilyUuid(@Param("familyUuid") CustomUuid familyUuid);
 }
 

@@ -50,4 +50,10 @@ public interface FamilyMemberRepository {
    * 사용자 UUID로 가족 수 조회 (해당 사용자가 속한 가족 수)
    */
   int countByUserUuid(CustomUuid userUuid);
+
+  /**
+   * 가족 UUID에 속한 모든 구성원 일괄 Soft Delete (상태 무관)
+   * 가족 삭제 시 벌크 UPDATE로 처리
+   */
+  void softDeleteAllByFamilyUuid(CustomUuid familyUuid);
 }

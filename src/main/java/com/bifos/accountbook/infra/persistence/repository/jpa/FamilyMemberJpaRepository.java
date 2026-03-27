@@ -5,6 +5,7 @@ import com.bifos.accountbook.domain.value.CustomUuid;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -37,5 +38,10 @@ public interface FamilyMemberJpaRepository extends JpaRepository<FamilyMember, L
 
   @Query("SELECT COUNT(fm) FROM FamilyMember fm WHERE fm.userUuid = :userUuid AND fm.status = com.bifos.accountbook.domain.value.FamilyMemberStatus.ACTIVE")
   int countByUserUuid(@Param("userUuid") CustomUuid userUuid);
+
+  @Modifying
+  @Query("UPDATE FamilyMember fm SET fm.status = com.bifos.accountbook.domain.value.FamilyMemberStatus.LEFT "
+      + "WHERE fm.familyUuid = :familyUuid")
+  void softDeleteAllByFamilyUuid(@Param("familyUuid") CustomUuid familyUuid);
 }
 

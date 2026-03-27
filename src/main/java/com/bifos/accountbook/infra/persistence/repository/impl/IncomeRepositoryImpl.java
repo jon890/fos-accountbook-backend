@@ -129,5 +129,10 @@ public class IncomeRepositoryImpl implements IncomeRepository {
   private BooleanExpression dateLoe(QIncome income, LocalDateTime endDate) {
     return endDate != null ? income.date.loe(endDate) : null;
   }
+
+  @Override
+  public void softDeleteAllByFamilyUuid(CustomUuid familyUuid) {
+    jpaRepository.softDeleteAllByFamilyUuid(familyUuid);
+  }
 }
 

@@ -11,6 +11,7 @@ import com.bifos.accountbook.domain.entity.User;
 import com.bifos.accountbook.domain.repository.CategoryRepository;
 import com.bifos.accountbook.domain.repository.ExpenseRepository;
 import com.bifos.accountbook.domain.repository.FamilyMemberRepository;
+import com.bifos.accountbook.domain.repository.IncomeRepository;
 import com.bifos.accountbook.domain.repository.FamilyRepository;
 import com.bifos.accountbook.domain.value.CustomUuid;
 import com.bifos.accountbook.domain.value.FamilyMemberRole;
@@ -38,6 +39,7 @@ public class FamilyService {
   private final FamilyValidationService familyValidationService;
   private final UserProfileService userProfileService;
   private final ExpenseRepository expenseRepository;
+  private final IncomeRepository incomeRepository;
   private final CategoryRepository categoryRepository;
 
   /**
@@ -159,9 +161,12 @@ public class FamilyService {
 
     family.delete();
 
-    // 가족 멤버 전체 Soft Delete 전파
-    familyMemberRepository.findAllByFamilyUuid(familyUuid)
-                          .forEach(FamilyMember::delete);
+    // 가족 멤버 전체 Soft Delete (벌크 UPDATE — 이미 LEFT 상태 포함)
+    familyMemberRepository.softDeleteAllByFamilyUuid(familyUuid);
+
+    // 지출/수입 전체 Soft Delete 전파
+    expenseRepository.softDeleteAllByFamilyUuid(familyUuid);
+    incomeRepository.softDeleteAllByFamilyUuid(familyUuid);
 
     log.info("Deleted family: {} by user: {}", familyUuid, userUuid);
   }

@@ -75,4 +75,10 @@ public interface ExpenseRepository {
    * @param newCategoryUuid 이동 후 카테고리 UUID
    */
   void moveExpenses(CustomUuid oldCategoryUuid, CustomUuid newCategoryUuid);
+
+  /**
+   * 가족 UUID에 속한 모든 지출 일괄 Soft Delete
+   * 가족 삭제 시 벌크 UPDATE로 처리
+   */
+  void softDeleteAllByFamilyUuid(CustomUuid familyUuid);
 }

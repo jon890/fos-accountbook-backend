@@ -82,4 +82,9 @@ public interface ExpenseJpaRepository extends JpaRepository<Expense, Long> {
       @Param("familyUuid") CustomUuid familyUuid,
       @Param("startDate") LocalDateTime startDate,
       @Param("endDate") LocalDateTime endDate);
+
+  @Modifying
+  @Query("UPDATE Expense e SET e.status = com.bifos.accountbook.domain.value.ExpenseStatus.DELETED "
+      + "WHERE e.family.uuid = :familyUuid")
+  void softDeleteAllByFamilyUuid(@Param("familyUuid") CustomUuid familyUuid);
 }

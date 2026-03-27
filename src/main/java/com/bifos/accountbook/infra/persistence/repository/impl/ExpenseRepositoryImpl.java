@@ -142,4 +142,9 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
   public void moveExpenses(CustomUuid oldCategoryUuid, CustomUuid newCategoryUuid) {
     jpaRepository.moveExpenses(oldCategoryUuid, newCategoryUuid);
   }
+
+  @Override
+  public void softDeleteAllByFamilyUuid(CustomUuid familyUuid) {
+    jpaRepository.softDeleteAllByFamilyUuid(familyUuid);
+  }
 }

@@ -58,5 +58,10 @@ public class FamilyMemberRepositoryImpl implements FamilyMemberRepository {
   public int countByUserUuid(CustomUuid userUuid) {
     return jpaRepository.countByUserUuid(userUuid);
   }
+
+  @Override
+  public void softDeleteAllByFamilyUuid(CustomUuid familyUuid) {
+    jpaRepository.softDeleteAllByFamilyUuid(familyUuid);
+  }
 }
 

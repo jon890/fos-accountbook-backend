@@ -58,5 +58,11 @@ public interface IncomeRepository {
       LocalDateTime startDate,
       LocalDateTime endDate,
       Pageable pageable);
+
+  /**
+   * 가족 UUID에 속한 모든 수입 일괄 Soft Delete
+   * 가족 삭제 시 벌크 UPDATE로 처리
+   */
+  void softDeleteAllByFamilyUuid(CustomUuid familyUuid);
 }
 

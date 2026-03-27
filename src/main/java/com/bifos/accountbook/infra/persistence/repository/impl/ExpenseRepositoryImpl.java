@@ -142,4 +142,10 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
   public void moveExpenses(CustomUuid oldCategoryUuid, CustomUuid newCategoryUuid) {
     jpaRepository.moveExpenses(oldCategoryUuid, newCategoryUuid);
   }
+
+  @Override
+  public boolean existsByRecurringExpenseUuidAndYearMonth(CustomUuid recurringExpenseUuid,
+                                                          int year, int month) {
+    return jpaRepository.existsByRecurringExpenseUuidAndYearMonth(recurringExpenseUuid, year, month);
+  }
 }

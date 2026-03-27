@@ -82,4 +82,17 @@ public interface ExpenseJpaRepository extends JpaRepository<Expense, Long> {
       @Param("familyUuid") CustomUuid familyUuid,
       @Param("startDate") LocalDateTime startDate,
       @Param("endDate") LocalDateTime endDate);
+
+  @Query("""
+      SELECT COUNT(e) > 0
+      FROM Expense e
+      WHERE e.recurringExpenseUuid = :recurringExpenseUuid
+      AND e.status = com.bifos.accountbook.domain.value.ExpenseStatus.ACTIVE
+      AND YEAR(e.date) = :year
+      AND MONTH(e.date) = :month
+      """)
+  boolean existsByRecurringExpenseUuidAndYearMonth(
+      @Param("recurringExpenseUuid") CustomUuid recurringExpenseUuid,
+      @Param("year") int year,
+      @Param("month") int month);
 }

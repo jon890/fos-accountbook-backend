@@ -84,7 +84,12 @@ public enum ErrorCode {
   // ============================================
   // Notification Errors (8000~8999)
   // ============================================
-  NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "N001", "알림을 찾을 수 없습니다");
+  NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "N001", "알림을 찾을 수 없습니다"),
+
+  // ============================================
+  // RecurringExpense Errors
+  // ============================================
+  RECURRING_EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "RE001", "고정지출을 찾을 수 없습니다");
 
   private final HttpStatus httpStatus;
   private final String code;

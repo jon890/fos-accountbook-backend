@@ -96,6 +96,13 @@ public class Expense {
   private boolean excludeFromBudget = false;
 
   /**
+   * 고정지출 UUID (스케줄러가 생성한 지출인 경우 설정)
+   * 동일 월 중복 생성 방지에 활용됩니다.
+   */
+  @Column(name = "recurring_expense_uuid", length = 36)
+  private CustomUuid recurringExpenseUuid;
+
+  /**
    * JPA 연관관계 정책:
    * - Family: @ManyToOne 사용 (ORM의 장점 활용)
    * - Category: UUID만 사용 (CategoryService 캐시 활용)
@@ -146,6 +153,13 @@ public class Expense {
    */
   public void setExcludeFromBudget(boolean excludeFromBudget) {
     this.excludeFromBudget = excludeFromBudget;
+  }
+
+  /**
+   * 고정지출 UUID 설정 (스케줄러 생성 지출에만 사용)
+   */
+  public void setRecurringExpenseUuid(CustomUuid recurringExpenseUuid) {
+    this.recurringExpenseUuid = recurringExpenseUuid;
   }
 
   /**

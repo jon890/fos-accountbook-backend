@@ -75,4 +75,10 @@ public interface ExpenseRepository {
    * @param newCategoryUuid 이동 후 카테고리 UUID
    */
   void moveExpenses(CustomUuid oldCategoryUuid, CustomUuid newCategoryUuid);
+
+  /**
+   * 고정지출의 특정 연월 지출이 이미 존재하는지 확인
+   * 스케줄러 중복 생성 방지용
+   */
+  boolean existsByRecurringExpenseUuidAndYearMonth(CustomUuid recurringExpenseUuid, int year, int month);
 }

@@ -38,5 +38,10 @@ public class FamilyRepositoryImpl implements FamilyRepository {
   public List<Family> findAllActive() {
     return jpaRepository.findAllActive();
   }
+
+  @Override
+  public List<Family> findAllByUuidIn(List<CustomUuid> uuids) {
+    return jpaRepository.findAllByUuidIn(uuids);
+  }
 }
 

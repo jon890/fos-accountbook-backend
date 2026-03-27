@@ -30,4 +30,9 @@ public interface FamilyRepository {
    * 모든 활성 가족 조회
    */
   List<Family> findAllActive();
+
+  /**
+   * UUID 목록으로 가족 일괄 조회 (스케줄러 N+1 방지용)
+   */
+  List<Family> findAllByUuidIn(List<CustomUuid> uuids);
 }

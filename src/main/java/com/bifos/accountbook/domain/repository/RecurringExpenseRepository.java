@@ -23,4 +23,10 @@ public interface RecurringExpenseRepository {
    * 스케줄러용: 특정 날짜(1~28)에 해당하는 모든 활성 고정지출 조회
    */
   List<RecurringExpense> findAllActiveByDayOfMonth(int dayOfMonth);
+
+  /**
+   * 스케줄러용: 월 마지막 날 처리 - dayOfMonth 이상인 모든 활성 고정지출 조회
+   * (예: 2월 28일에 dayOfMonth=29,30,31인 항목도 함께 처리)
+   */
+  List<RecurringExpense> findAllActiveByDayOfMonthGreaterThanEqual(int dayOfMonth);
 }

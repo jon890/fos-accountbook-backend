@@ -38,4 +38,10 @@ public class RecurringExpenseRepositoryImpl implements RecurringExpenseRepositor
   public List<RecurringExpense> findAllActiveByDayOfMonth(int dayOfMonth) {
     return jpaRepository.findAllByDayOfMonthAndStatus(dayOfMonth, RecurringExpenseStatus.ACTIVE);
   }
+
+  @Override
+  public List<RecurringExpense> findAllActiveByDayOfMonthGreaterThanEqual(int dayOfMonth) {
+    return jpaRepository.findAllByDayOfMonthGreaterThanEqualAndStatus(
+        dayOfMonth, RecurringExpenseStatus.ACTIVE);
+  }
 }

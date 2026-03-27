@@ -17,4 +17,7 @@ public interface RecurringExpenseJpaRepository extends JpaRepository<RecurringEx
   List<RecurringExpense> findAllByFamilyUuidAndStatus(CustomUuid familyUuid, RecurringExpenseStatus status);
 
   List<RecurringExpense> findAllByDayOfMonthAndStatus(int dayOfMonth, RecurringExpenseStatus status);
+
+  List<RecurringExpense> findAllByDayOfMonthGreaterThanEqualAndStatus(
+      int dayOfMonth, RecurringExpenseStatus status);
 }

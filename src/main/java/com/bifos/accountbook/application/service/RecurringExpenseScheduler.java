@@ -1,9 +1,15 @@
 package com.bifos.accountbook.application.service;
 
+import com.bifos.accountbook.domain.entity.Family;
 import com.bifos.accountbook.domain.entity.RecurringExpense;
+import com.bifos.accountbook.domain.repository.FamilyRepository;
 import com.bifos.accountbook.domain.repository.RecurringExpenseRepository;
+import com.bifos.accountbook.domain.value.CustomUuid;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,36 +25,49 @@ import org.springframework.stereotype.Component;
 public class RecurringExpenseScheduler {
 
   private final RecurringExpenseRepository recurringExpenseRepository;
+  private final FamilyRepository familyRepository;
   private final RecurringExpenseRegistrar recurringExpenseRegistrar;
 
   /**
    * 매일 자정(00:00)에 실행
    * 오늘 날짜(dayOfMonth)에 해당하는 고정지출을 일괄 등록합니다.
+   * 월 마지막 날에는 해당 월에 존재하지 않는 날짜(예: 2월의 29~31일)에 등록된 항목도 처리합니다.
    */
   @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
   public void registerRecurringExpenses() {
-    LocalDate today = LocalDate.now();
+    LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
     int dayOfMonth = today.getDayOfMonth();
+    boolean isLastDayOfMonth = dayOfMonth == today.lengthOfMonth();
 
-    // 28일 초과 날짜에 등록된 고정지출은 해당 월의 마지막 날에 처리
-    // (예: 30일 등록 → 2월에는 28일에 처리)
-    int targetDay = Math.min(dayOfMonth, 28);
+    log.info("[RecurringExpenseScheduler] 고정지출 등록 시작 - 날짜: {}, 월 마지막 날: {}",
+        today, isLastDayOfMonth);
 
-    log.info("[RecurringExpenseScheduler] 고정지출 등록 시작 - 날짜: {}, 대상 day: {}", today, targetDay);
-
-    List<RecurringExpense> targets = recurringExpenseRepository.findAllActiveByDayOfMonth(targetDay);
+    List<RecurringExpense> targets = isLastDayOfMonth
+        ? recurringExpenseRepository.findAllActiveByDayOfMonthGreaterThanEqual(dayOfMonth)
+        : recurringExpenseRepository.findAllActiveByDayOfMonth(dayOfMonth);
 
     if (targets.isEmpty()) {
       log.info("[RecurringExpenseScheduler] 오늘 등록할 고정지출 없음");
       return;
     }
 
+    // 가족 정보 일괄 조회 (N+1 방지)
+    List<CustomUuid> familyUuids = targets.stream()
+                                          .map(RecurringExpense::getFamilyUuid)
+                                          .distinct()
+                                          .collect(Collectors.toList());
+    Map<CustomUuid, Family> familyMap = familyRepository.findAllByUuidIn(familyUuids).stream()
+                                                        .collect(Collectors.toMap(
+                                                            Family::getUuid,
+                                                            f -> f));
+
     int successCount = 0;
     int skipCount = 0;
 
     for (RecurringExpense recurring : targets) {
+      Family family = familyMap.get(recurring.getFamilyUuid());
       try {
-        boolean registered = recurringExpenseRegistrar.registerIfNotExists(recurring, today);
+        boolean registered = recurringExpenseRegistrar.registerIfNotExists(recurring, today, family);
         if (registered) {
           successCount++;
         } else {
@@ -60,7 +79,7 @@ public class RecurringExpenseScheduler {
       }
     }
 
-    log.info("[RecurringExpenseScheduler] 완료 - 등록: {}건, 스킵(이미 등록): {}건", successCount, skipCount);
+    log.info("[RecurringExpenseScheduler] 완료 - 등록: {}건, 스킵(이미 등록): {}건",
+        successCount, skipCount);
   }
 }
-

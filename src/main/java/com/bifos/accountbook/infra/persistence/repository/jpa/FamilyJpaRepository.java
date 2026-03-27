@@ -21,5 +21,8 @@ public interface FamilyJpaRepository extends JpaRepository<Family, Long> {
 
   @Query("SELECT f FROM Family f WHERE f.status = com.bifos.accountbook.domain.value.FamilyStatus.ACTIVE")
   List<Family> findAllActive();
+
+  @Query("SELECT f FROM Family f WHERE f.uuid IN :uuids")
+  List<Family> findAllByUuidIn(@Param("uuids") List<CustomUuid> uuids);
 }
 

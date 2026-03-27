@@ -68,6 +68,10 @@ public class FamilyMember {
   @JoinColumn(name = "user_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
   private User user;
 
+  public void delete() {
+    this.status = FamilyMemberStatus.LEFT;
+  }
+
   @PrePersist
   public void prePersist() {
     if (uuid == null) {

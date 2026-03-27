@@ -2,7 +2,6 @@ package com.bifos.accountbook.domain.entity;
 
 import com.bifos.accountbook.domain.value.CustomUuid;
 import com.bifos.accountbook.domain.value.FamilyStatus;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -67,15 +66,15 @@ public class Family {
   @Builder.Default
   private FamilyStatus status = FamilyStatus.ACTIVE;
 
-  @OneToMany(mappedBy = "family", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @OneToMany(mappedBy = "family")
   @Builder.Default
   private List<FamilyMember> members = new ArrayList<>();
 
-  @OneToMany(mappedBy = "family", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @OneToMany(mappedBy = "family")
   @Builder.Default
   private List<Income> incomes = new ArrayList<>();
 
-  @OneToMany(mappedBy = "family", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @OneToMany(mappedBy = "family")
   @Builder.Default
   private List<Expense> expenses = new ArrayList<>();
 

@@ -157,7 +157,10 @@ public class FamilyService {
                                         .addParameter("familyUuid", familyUuid.getValue()));
 
     family.delete();
-    // 더티 체킹으로 자동 업데이트
+
+    // 가족 멤버 전체 Soft Delete 전파
+    familyMemberRepository.findAllByFamilyUuid(familyUuid)
+                          .forEach(FamilyMember::delete);
 
     log.info("Deleted family: {} by user: {}", familyUuid, userUuid);
   }

@@ -176,6 +176,9 @@ public class FamilyService {
     notificationRepository.deleteAllByFamilyUuid(familyUuid);
     invitationRepository.deleteAllByFamilyUuid(familyUuid);
 
+    // 카테고리 캐시 무효화 (벌크 DELETE 후 @Cacheable 캐시 갱신)
+    categoryService.evictCategoriesCache(familyUuid);
+
     log.info("Deleted family: {} by user: {}", familyUuid, userUuid);
   }
 

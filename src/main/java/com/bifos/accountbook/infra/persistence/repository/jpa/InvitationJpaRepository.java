@@ -33,7 +33,7 @@ public interface InvitationJpaRepository extends JpaRepository<Invitation, Long>
       @Param("status") InvitationStatus status,
       @Param("now") LocalDateTime now);
 
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Query("DELETE FROM Invitation i WHERE i.familyUuid = :familyUuid")
   void deleteAllByFamilyUuid(@Param("familyUuid") CustomUuid familyUuid);
 }

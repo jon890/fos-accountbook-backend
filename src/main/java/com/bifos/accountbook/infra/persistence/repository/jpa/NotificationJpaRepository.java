@@ -74,7 +74,7 @@ public interface NotificationJpaRepository extends JpaRepository<Notification, L
   @Query("DELETE FROM Notification n WHERE n.createdAt < :dateTime")
   void deleteByCreatedAtBefore(@Param("dateTime") LocalDateTime dateTime);
 
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Query("DELETE FROM Notification n WHERE n.familyUuid = :familyUuid")
   void deleteAllByFamilyUuid(@Param("familyUuid") CustomUuid familyUuid);
 }

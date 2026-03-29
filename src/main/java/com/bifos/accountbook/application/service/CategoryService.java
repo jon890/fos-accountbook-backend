@@ -306,6 +306,14 @@ public class CategoryService {
    * 같은 클래스 내에서 @CacheEvict 메서드를 호출하면 프록시를 거치지 않아
    * 캐시 무효화가 동작하지 않기 때문에 CacheManager를 직접 사용합니다.
    */
+  /**
+   * 외부에서 카테고리 캐시를 무효화할 수 있는 공개 메서드
+   * 가족 삭제 시 FamilyService에서 호출
+   */
+  public void evictCategoriesCache(CustomUuid familyUuid) {
+    evictFamilyCache(familyUuid.getValue());
+  }
+
   private void evictFamilyCache(String familyUuid) {
     var cache = cacheManager.getCache(CacheConfig.CATEGORIES_CACHE);
     if (cache != null) {

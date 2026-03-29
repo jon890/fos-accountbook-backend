@@ -27,7 +27,7 @@ public class BudgetAlertEventListener {
    * 지출 생성 이벤트 처리
    * 트랜잭션 커밋 후에 예산 상태를 체크합니다.
    */
-  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
   public void handleExpenseCreated(ExpenseCreatedEvent event) {
     try {
       budgetAlertService.checkAndCreateBudgetAlert(event.familyUuid(), event.date());
@@ -41,7 +41,7 @@ public class BudgetAlertEventListener {
    * 지출 수정 이벤트 처리
    * 트랜잭션 커밋 후에 예산 상태를 재체크합니다.
    */
-  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
   public void handleExpenseUpdated(ExpenseUpdatedEvent event) {
     try {
       budgetAlertService.checkAndCreateBudgetAlert(event.familyUuid(), event.date());

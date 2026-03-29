@@ -51,8 +51,8 @@ public class RecurringExpenseService {
                                                         .description(request.getDescription())
                                                         .dayOfMonth(request.getDayOfMonth())
                                                         .excludeFromBudget(
-                                                            request.getExcludeFromBudget() != null
-                                                                && request.getExcludeFromBudget())
+                                                            Boolean.TRUE.equals(
+                                                                request.getExcludeFromBudget()))
                                                         .build();
 
     recurringExpense = recurringExpenseRepository.save(recurringExpense);
@@ -90,7 +90,7 @@ public class RecurringExpenseService {
                                                                           recurringExpenseUuid.getValue()));
 
     if (!recurringExpense.getFamilyUuid().equals(familyUuid)) {
-      throw new BusinessException(ErrorCode.RECURRING_EXPENSE_NOT_FOUND)
+      throw new BusinessException(ErrorCode.ACCESS_DENIED)
           .addParameter("uuid", recurringExpenseUuid.getValue());
     }
 
@@ -123,7 +123,7 @@ public class RecurringExpenseService {
                                                                           recurringExpenseUuid.getValue()));
 
     if (!recurringExpense.getFamilyUuid().equals(familyUuid)) {
-      throw new BusinessException(ErrorCode.RECURRING_EXPENSE_NOT_FOUND)
+      throw new BusinessException(ErrorCode.ACCESS_DENIED)
           .addParameter("uuid", recurringExpenseUuid.getValue());
     }
 

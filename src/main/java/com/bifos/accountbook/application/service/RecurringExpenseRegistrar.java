@@ -7,9 +7,11 @@ import com.bifos.accountbook.domain.entity.Expense;
 import com.bifos.accountbook.domain.entity.Family;
 import com.bifos.accountbook.domain.entity.RecurringExpense;
 import com.bifos.accountbook.domain.repository.ExpenseRepository;
+import com.bifos.accountbook.domain.repository.FamilyRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,29 +30,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecurringExpenseRegistrar {
 
   private final ExpenseRepository expenseRepository;
+  private final FamilyRepository familyRepository;
   private final ApplicationEventPublisher eventPublisher;
 
   /**
    * 해당 월에 이미 등록된 경우 스킵, 아니면 지출 생성
    *
-   * @param family 스케줄러에서 일괄 조회한 가족 엔티티 (null이면 FAMILY_NOT_FOUND 예외)
    * @return true: 새로 등록, false: 이미 존재하여 스킵
    */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public boolean registerIfNotExists(RecurringExpense recurring, LocalDate today, Family family) {
-    if (family == null) {
-      throw new BusinessException(ErrorCode.FAMILY_NOT_FOUND)
-          .addParameter("familyUuid", recurring.getFamilyUuid().getValue());
-    }
+  public boolean registerIfNotExists(RecurringExpense recurring, LocalDate today) {
+    YearMonth yearMonth = YearMonth.of(today.getYear(), today.getMonthValue());
+    LocalDateTime startOfMonth = yearMonth.atDay(1).atStartOfDay();
+    LocalDateTime startOfNextMonth = yearMonth.plusMonths(1).atDay(1).atStartOfDay();
 
-    boolean alreadyExists = expenseRepository.existsByRecurringExpenseUuidAndYearMonth(
-        recurring.getUuid(), today.getYear(), today.getMonthValue());
+    boolean alreadyExists = expenseRepository.existsByRecurringExpenseUuidAndMonthRange(
+        recurring.getUuid(), startOfMonth, startOfNextMonth);
 
     if (alreadyExists) {
       log.debug("[RecurringExpenseRegistrar] 이미 등록된 고정지출 스킵 - uuid: {}, 연월: {}-{}",
           recurring.getUuid().getValue(), today.getYear(), today.getMonthValue());
       return false;
     }
+
+    Family family = familyRepository.findActiveByUuid(recurring.getFamilyUuid())
+                                    .orElseThrow(() -> new BusinessException(ErrorCode.FAMILY_NOT_FOUND)
+                                        .addParameter("familyUuid",
+                                            recurring.getFamilyUuid().getValue()));
 
     LocalDateTime expenseDate = LocalDateTime.of(today, LocalTime.MIDNIGHT);
 

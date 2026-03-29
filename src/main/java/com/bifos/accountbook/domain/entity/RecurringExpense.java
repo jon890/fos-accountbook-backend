@@ -70,12 +70,10 @@ public class RecurringExpense {
   private int dayOfMonth;
 
   @Column(name = "exclude_from_budget", nullable = false)
-  @Builder.Default
   private boolean excludeFromBudget = false;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 20)
-  @Builder.Default
   private RecurringExpenseStatus status = RecurringExpenseStatus.ACTIVE;
 
   @CreatedDate

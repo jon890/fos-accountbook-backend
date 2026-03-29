@@ -88,11 +88,11 @@ public interface ExpenseJpaRepository extends JpaRepository<Expense, Long> {
       FROM Expense e
       WHERE e.recurringExpenseUuid = :recurringExpenseUuid
       AND e.status = com.bifos.accountbook.domain.value.ExpenseStatus.ACTIVE
-      AND YEAR(e.date) = :year
-      AND MONTH(e.date) = :month
+      AND e.date >= :startOfMonth
+      AND e.date < :startOfNextMonth
       """)
-  boolean existsByRecurringExpenseUuidAndYearMonth(
+  boolean existsByRecurringExpenseUuidAndMonthRange(
       @Param("recurringExpenseUuid") CustomUuid recurringExpenseUuid,
-      @Param("year") int year,
-      @Param("month") int month);
+      @Param("startOfMonth") LocalDateTime startOfMonth,
+      @Param("startOfNextMonth") LocalDateTime startOfNextMonth);
 }

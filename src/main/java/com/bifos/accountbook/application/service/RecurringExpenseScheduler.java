@@ -8,7 +8,7 @@ import com.bifos.accountbook.domain.value.CustomUuid;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,23 +51,27 @@ public class RecurringExpenseScheduler {
       return;
     }
 
-    // 가족 정보 일괄 조회 (N+1 방지)
+    // 가족 정보 일괄 조회로 유효하지 않은 familyUuid 사전 필터링 (N+1 방지)
     List<CustomUuid> familyUuids = targets.stream()
                                           .map(RecurringExpense::getFamilyUuid)
                                           .distinct()
                                           .collect(Collectors.toList());
-    Map<CustomUuid, Family> familyMap = familyRepository.findAllByUuidIn(familyUuids).stream()
-                                                        .collect(Collectors.toMap(
-                                                            Family::getUuid,
-                                                            f -> f));
+    Set<CustomUuid> validFamilyUuids = familyRepository.findAllByUuidIn(familyUuids).stream()
+                                                        .map(Family::getUuid)
+                                                        .collect(Collectors.toSet());
 
     int successCount = 0;
     int skipCount = 0;
 
     for (RecurringExpense recurring : targets) {
-      Family family = familyMap.get(recurring.getFamilyUuid());
+      if (!validFamilyUuids.contains(recurring.getFamilyUuid())) {
+        log.warn("[RecurringExpenseScheduler] 유효하지 않은 가족 UUID - familyUuid: {}, recurringUuid: {}",
+            recurring.getFamilyUuid().getValue(), recurring.getUuid().getValue());
+        continue;
+      }
+
       try {
-        boolean registered = recurringExpenseRegistrar.registerIfNotExists(recurring, today, family);
+        boolean registered = recurringExpenseRegistrar.registerIfNotExists(recurring, today);
         if (registered) {
           successCount++;
         } else {

@@ -144,8 +144,9 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @Override
-  public boolean existsByRecurringExpenseUuidAndYearMonth(CustomUuid recurringExpenseUuid,
-                                                          int year, int month) {
-    return jpaRepository.existsByRecurringExpenseUuidAndYearMonth(recurringExpenseUuid, year, month);
+  public boolean existsByRecurringExpenseUuidAndMonthRange(
+      CustomUuid recurringExpenseUuid, LocalDateTime startOfMonth, LocalDateTime startOfNextMonth) {
+    return jpaRepository.existsByRecurringExpenseUuidAndMonthRange(
+        recurringExpenseUuid, startOfMonth, startOfNextMonth);
   }
 }

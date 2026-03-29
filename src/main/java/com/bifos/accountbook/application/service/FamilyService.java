@@ -13,6 +13,8 @@ import com.bifos.accountbook.domain.repository.ExpenseRepository;
 import com.bifos.accountbook.domain.repository.FamilyMemberRepository;
 import com.bifos.accountbook.domain.repository.FamilyRepository;
 import com.bifos.accountbook.domain.repository.IncomeRepository;
+import com.bifos.accountbook.domain.repository.InvitationRepository;
+import com.bifos.accountbook.domain.repository.NotificationRepository;
 import com.bifos.accountbook.domain.value.CustomUuid;
 import com.bifos.accountbook.domain.value.FamilyMemberRole;
 import com.bifos.accountbook.presentation.annotation.FamilyUuid;
@@ -42,6 +44,8 @@ public class FamilyService {
   private final ExpenseRepository expenseRepository;
   private final IncomeRepository incomeRepository;
   private final CategoryRepository categoryRepository;
+  private final NotificationRepository notificationRepository;
+  private final InvitationRepository invitationRepository;
 
   /**
    * 가족 생성 (생성자를 owner로 자동 추가 + 기본 카테고리 생성)
@@ -160,13 +164,17 @@ public class FamilyService {
 
     family.delete();
 
-    // 가족 멤버 전체 Soft Delete (벌크 UPDATE — 이미 LEFT 상태 포함)
+    // 가족 멤버 전체 Soft Delete (ACTIVE 상태인 구성원만 LEFT로 변경)
     familyMemberRepository.softDeleteAllByFamilyUuid(familyUuid);
 
     // 지출/수입/카테고리 전체 Soft Delete 전파
     expenseRepository.softDeleteAllByFamilyUuid(familyUuid);
     incomeRepository.softDeleteAllByFamilyUuid(familyUuid);
     categoryRepository.softDeleteAllByFamilyUuid(familyUuid);
+
+    // 알림/초대 삭제 (soft delete 컬럼 없음 — 하드 삭제)
+    notificationRepository.deleteAllByFamilyUuid(familyUuid);
+    invitationRepository.deleteAllByFamilyUuid(familyUuid);
 
     log.info("Deleted family: {} by user: {}", familyUuid, userUuid);
   }

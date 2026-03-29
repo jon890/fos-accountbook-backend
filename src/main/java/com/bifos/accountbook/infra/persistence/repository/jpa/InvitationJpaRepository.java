@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -31,5 +32,9 @@ public interface InvitationJpaRepository extends JpaRepository<Invitation, Long>
       @Param("token") String token,
       @Param("status") InvitationStatus status,
       @Param("now") LocalDateTime now);
+
+  @Modifying
+  @Query("DELETE FROM Invitation i WHERE i.familyUuid = :familyUuid")
+  void deleteAllByFamilyUuid(@Param("familyUuid") CustomUuid familyUuid);
 }
 

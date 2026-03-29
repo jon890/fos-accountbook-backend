@@ -78,5 +78,10 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   public void deleteByCreatedAtBefore(LocalDateTime dateTime) {
     jpaRepository.deleteByCreatedAtBefore(dateTime);
   }
+
+  @Override
+  public void deleteAllByFamilyUuid(CustomUuid familyUuid) {
+    jpaRepository.deleteAllByFamilyUuid(familyUuid);
+  }
 }
 

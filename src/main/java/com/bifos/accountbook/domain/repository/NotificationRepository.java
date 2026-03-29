@@ -70,5 +70,11 @@ public interface NotificationRepository {
    * Batch 작업용
    */
   void deleteByCreatedAtBefore(java.time.LocalDateTime dateTime);
+
+  /**
+   * 가족 UUID에 속한 모든 알림 삭제
+   * 가족 삭제 시 연관 알림 정리용
+   */
+  void deleteAllByFamilyUuid(CustomUuid familyUuid);
 }
 

@@ -41,4 +41,10 @@ public interface InvitationRepository {
    * 초대 삭제
    */
   void delete(Invitation invitation);
+
+  /**
+   * 가족 UUID에 속한 모든 초대 삭제
+   * 가족 삭제 시 연관 초대 정리용
+   */
+  void deleteAllByFamilyUuid(CustomUuid familyUuid);
 }

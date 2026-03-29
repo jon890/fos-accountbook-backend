@@ -50,4 +50,9 @@ public class InvitationRepositoryImpl implements InvitationRepository {
   public void delete(Invitation invitation) {
     jpaRepository.delete(invitation);
   }
+
+  @Override
+  public void deleteAllByFamilyUuid(CustomUuid familyUuid) {
+    jpaRepository.deleteAllByFamilyUuid(familyUuid);
+  }
 }

@@ -52,8 +52,8 @@ public interface FamilyMemberRepository {
   int countByUserUuid(CustomUuid userUuid);
 
   /**
-   * 가족 UUID에 속한 모든 구성원 일괄 Soft Delete (상태 무관)
-   * 가족 삭제 시 벌크 UPDATE로 처리
+   * 가족 UUID에 속한 ACTIVE 구성원 일괄 Soft Delete (ACTIVE → LEFT)
+   * 가족 삭제 시 벌크 UPDATE로 처리 (이미 LEFT 상태인 구성원은 변경되지 않음)
    */
   void softDeleteAllByFamilyUuid(CustomUuid familyUuid);
 }

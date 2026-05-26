@@ -130,11 +130,27 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(
       ConstraintViolationException ex) {
-    log.warn("Constraint violation: {}", ex.getMessage());
+    List<ApiErrorResponse.ErrorDetails> errorDetails = ex.getConstraintViolations()
+        .stream()
+        .map(violation -> {
+          String propertyPath = violation.getPropertyPath().toString();
+          String field = propertyPath.contains(".")
+              ? propertyPath.substring(propertyPath.lastIndexOf('.') + 1)
+              : propertyPath;
+          return ApiErrorResponse.ErrorDetails.builder()
+              .code("CONSTRAINT_VIOLATION")
+              .field(field)
+              .rejectedValue(violation.getInvalidValue())
+              .build();
+        })
+        .collect(Collectors.toList());
+
+    log.warn("Constraint violation: {} errors, details: {}",
+        errorDetails.size(), errorDetails);
 
     return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
-        .body(ApiErrorResponse.of("입력값 검증에 실패했습니다."));
+        .body(ApiErrorResponse.of("입력값 검증에 실패했습니다.", errorDetails));
   }
 
   /**

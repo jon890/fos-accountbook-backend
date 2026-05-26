@@ -24,6 +24,7 @@ import com.bifos.accountbook.shared.aop.ValidateFamilyAccess;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -269,7 +270,7 @@ public class ExpenseService {
 
     LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0, 0);
     LocalDateTime end = start.with(TemporalAdjusters.lastDayOfMonth())
-        .withHour(23).withMinute(59).withSecond(59);
+        .with(LocalTime.MAX);
 
     List<Expense> expenses = expenseRepository.findByFamilyUuidAndDateBetween(
         familyUuid, start, end);
@@ -284,7 +285,11 @@ public class ExpenseService {
         categoryName = categoryService.findByUuidCached(familyUuid, expense.getCategoryUuid())
             .getName();
       } catch (BusinessException e) {
-        categoryName = "미분류";
+        if (e.getErrorCode() == ErrorCode.CATEGORY_NOT_FOUND) {
+          categoryName = "미분류";
+        } else {
+          throw e;
+        }
       }
 
       csv.append(expense.getDate().toLocalDate())

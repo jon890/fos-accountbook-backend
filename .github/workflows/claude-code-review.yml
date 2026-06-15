@@ -101,7 +101,7 @@ jobs:
             done
 
       - name: Claude 코드 리뷰 실행 (단일 Opus agent)
-        uses: anthropics/claude-code-action@v1.0.133
+        uses: anthropics/claude-code-action@v1.0.148
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed_bots: "*"

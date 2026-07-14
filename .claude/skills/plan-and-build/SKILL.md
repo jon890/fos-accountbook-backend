@@ -58,7 +58,7 @@ description: AI 에이전트 하네스를 사용한 대규모 구현 자동화. 
 
 ### 3. 구현 계획 초안
 
-`.claude/skills/planning/task-create.md`를 정확히 숙지한 후, 다음을 포함한 초안을 작성한다:
+`~/.claude/skills/planning/task-create.md`를 정확히 숙지한 후, 다음을 포함한 초안을 작성한다:
 
 - phase별 분리 이유와 작업 목록
 - 성공 기준 (실행 가능한 명령어)
@@ -68,7 +68,7 @@ description: AI 에이전트 하네스를 사용한 대규모 구현 자동화. 
 
 ### 4. Task 생성
 
-`.claude/skills/planning/task-create.md` 형식에 따라 task와 phase 파일을 생성한다:
+`~/.claude/skills/planning/task-create.md` 형식에 따라 task와 phase 파일을 생성한다:
 
 ```
 tasks/{task-name}/
@@ -176,7 +176,7 @@ tasks/
 .claude/skills/plan-and-build/
   run-phases.py       # phase 순차 실행기 (실시간 스트리밍, --from-phase 지원)
 
-.claude/skills/planning/
+~/.claude/skills/planning/  (글로벌 공용 코어, symlink → ~/personal/fos-skills/planning)
   task-create.md      # task/phase 작성 가이드 (planning 스킬 산출물 규격)
 ```
 

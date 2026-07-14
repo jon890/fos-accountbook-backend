@@ -112,7 +112,7 @@ python3 .claude/skills/plan-and-build/run-phases.py tasks/{task-name} --from-pha
 
 | Phase | 제목               | 모델    | 내용                                                               |
 | ----- | ------------------ | ------- | ------------------------------------------------------------------ |
-| N-1   | 빌드 검증 + 테스트 | `haiku` | `pnpm build && pnpm test`, 금지사항 검증 (`grep` 체크)             |
+| N-1   | 빌드 검증 + 테스트 | `haiku` | `./gradlew checkstyleMain checkstyleTest test build -x integrationTest --no-daemon`, 금지사항 검증 (`grep` 체크) |
 | N     | 커밋 + push        | `haiku` | 변경 파일 `git add` → `git commit` → `git push`. task 파일도 포함. |
 
 **커밋 phase (Phase N) 실행 순서**:
@@ -145,8 +145,8 @@ python3 .claude/skills/plan-and-build/run-phases.py tasks/{task-name} --from-pha
 ### 6. 완료 후 처리
 
 1. `index.json` status 확인 → `completed` 이면 성공
-2. **`pnpm run ci` 실행하여 최종 통합 검증** — lint + test + build 전원 통과 필수 (`pnpm build && pnpm test`만 돌리지 말 것. lint 누락 방지)
-3. ci 실패 시 해당 phase로 회귀 (`--from-phase N`) — "tsc만 통과했으니 OK"로 넘기지 않는다
+2. **`./gradlew checkstyleMain checkstyleTest test build -x integrationTest --no-daemon` 실행하여 최종 통합 검증** — Checkstyle + test + build 전원 통과 필수 (`./gradlew build -x test`만 돌리지 말 것. Checkstyle 누락 방지)
+3. 검증 실패 시 해당 phase로 회귀 (`--from-phase N`) — "build만 통과했으니 OK"로 넘기지 않는다
 4. 사용자에게 로컬 테스트 요청
 5. 사용자 확인 후 **git commit + push** 진행
 6. 다음 plan으로 이동
@@ -179,20 +179,6 @@ tasks/
 .claude/skills/planning/
   task-create.md      # task/phase 작성 가이드 (planning 스킬 산출물 규격)
 ```
-
-## fos-blog 레이어별 phase 순서
-
-CLAUDE.md "Architecture" 의 레이어 (`app → services → infra`, `lib` 는 횡단). 새 기능 추가 시 권장 phase 분리:
-
-| Phase | 내용 | 비고 |
-| --- | --- | --- |
-| 1 | infra 레이어 (`src/infra/db/` 또는 `src/infra/github/`) | Drizzle schema / repository / Octokit 클라이언트 |
-| 2 | service 레이어 (`src/services/`) | 도메인 로직, idempotency, 트랜잭션 |
-| 3 | app 레이어 (`src/app/`) — page / API route | server action 또는 route handler |
-| 4 | UI 컴포넌트 (`src/components/`) | shadcn/ui + 디자인 토큰 사용 |
-| 5 | 빌드 + lint + type-check + test 통합 검증 | `pnpm lint && pnpm type-check && pnpm test --run && pnpm build` |
-
-DB 스키마 변경이 필요한 경우 별도 plan 으로 선행 — Drizzle 규칙 (`pnpm db:generate` → SQL 커밋 → `pnpm db:migrate`). `db:push` 프로덕션 금지 (CLAUDE.md 의 DB 스키마 변경 규칙 참조).
 
 ## Phase 모델 라우팅 (토큰 효율 최우선)
 

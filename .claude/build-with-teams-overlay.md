@@ -18,7 +18,14 @@
 
 ## task 스키마 세부
 
-`index.json` 필드명이 코어 예시와 다르다 (`total_phases`/`created_at`/`current_phase`/`depends_on`/`related_docs` 미사용):
+`index.json` 필드명이 코어 예시와 다르다. 아래 필드는 미사용:
+
+- `total_phases`
+- `created_at`
+- `current_phase`
+- `depends_on`
+- `related_docs`
+
 
 ```jsonc
 {
@@ -39,7 +46,11 @@ phase 파일 경로: `tasks/{plan}-{slug}/phase-{N}.md`. planning 이 이미 `pl
 
 `.claude/skills/_shared/common-critic-patterns.md` — **파일명이 `common-pitfalls.md` 가 아니다** (다른 레포와 다름, 혼동 주의).
 
-critic·code-reviewer 는 P1~P7(공통) + "backend-fos" 절의 BE1(`@Transactional` 경계) · BE2(Entity-DTO 노출) · BE3(AOP 자기호출 우회) 를 사전 해소 점검 대상으로 쓴다.
+critic·code-reviewer 는 P1~P7(공통) + "backend-fos" 절의 아래 3개를 사전 해소 점검 대상으로 쓴다:
+
+- BE1 — `@Transactional` 경계
+- BE2 — Entity-DTO 노출
+- BE3 — AOP 자기호출 우회
 
 ## docs-verifier 검증 관점 (architect 위임 시 전달)
 

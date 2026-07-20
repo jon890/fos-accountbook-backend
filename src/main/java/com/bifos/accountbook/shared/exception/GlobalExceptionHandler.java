@@ -3,6 +3,7 @@ package com.bifos.accountbook.shared.exception;
 import com.bifos.accountbook.shared.exception.BusinessException;
 import com.bifos.accountbook.shared.dto.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -120,6 +121,32 @@ public class GlobalExceptionHandler {
                                                          .collect(Collectors.toList());
 
     log.error("Validation error: {} errors, details: {}", errorDetails.size(), errorDetails, ex);
+
+    return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(ApiErrorResponse.of("입력값 검증에 실패했습니다.", errorDetails));
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ApiErrorResponse> handleConstraintViolationException(
+      ConstraintViolationException ex) {
+    List<ApiErrorResponse.ErrorDetails> errorDetails = ex.getConstraintViolations()
+        .stream()
+        .map(violation -> {
+          String propertyPath = violation.getPropertyPath().toString();
+          String field = propertyPath.contains(".")
+              ? propertyPath.substring(propertyPath.lastIndexOf('.') + 1)
+              : propertyPath;
+          return ApiErrorResponse.ErrorDetails.builder()
+              .code("CONSTRAINT_VIOLATION")
+              .field(field)
+              .rejectedValue(violation.getInvalidValue())
+              .build();
+        })
+        .collect(Collectors.toList());
+
+    log.warn("Constraint violation: {} errors, details: {}",
+        errorDetails.size(), errorDetails);
 
     return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)

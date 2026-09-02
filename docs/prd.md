@@ -52,6 +52,7 @@
 - 카테고리, 날짜 범위, 사용자별 필터링 (페이징)
 - 지출: `exclude_from_budget` 플래그로 예산 집계 제외 가능
 - Soft Delete (ACTIVE → DELETED)
+- 월별 지출내역 CSV 내보내기 (BOM 포함, RFC 4180 준수)
 
 ### F4. 카테고리
 

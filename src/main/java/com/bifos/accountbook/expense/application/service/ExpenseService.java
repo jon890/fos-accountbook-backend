@@ -22,7 +22,11 @@ import com.bifos.accountbook.shared.aop.FamilyUuid;
 import com.bifos.accountbook.shared.aop.UserUuid;
 import com.bifos.accountbook.shared.aop.ValidateFamilyAccess;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -251,6 +255,65 @@ public class ExpenseService {
     }
 
     return ExpenseResponse.fromWithoutCategory(expense);
+  }
+
+  /**
+   * 월별 지출내역 CSV 생성
+   * BOM 포함 (Excel 한글 깨짐 방지), RFC 4180 준수
+   */
+  @ValidateFamilyAccess
+  public byte[] exportMonthlyExpenseCsv(
+      @UserUuid CustomUuid userUuid,
+      @FamilyUuid CustomUuid familyUuid,
+      int year,
+      int month) {
+
+    LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0, 0);
+    LocalDateTime end = start.with(TemporalAdjusters.lastDayOfMonth())
+        .with(LocalTime.MAX);
+
+    List<Expense> expenses = expenseRepository.findByFamilyUuidAndDateBetween(
+        familyUuid, start, end);
+
+    StringBuilder csv = new StringBuilder();
+    csv.append('\uFEFF');
+    csv.append("날짜,카테고리,금액,설명\r\n");
+
+    for (Expense expense : expenses) {
+      String categoryName;
+      try {
+        categoryName = categoryService.findByUuidCached(familyUuid, expense.getCategoryUuid())
+            .getName();
+      } catch (BusinessException e) {
+        if (e.getErrorCode() == ErrorCode.CATEGORY_NOT_FOUND) {
+          categoryName = "미분류";
+        } else {
+          throw e;
+        }
+      }
+
+      csv.append(expense.getDate().toLocalDate())
+          .append(",")
+          .append(escapeCsvField(categoryName))
+          .append(",")
+          .append(expense.getAmount().toPlainString())
+          .append(",")
+          .append(escapeCsvField(expense.getDescription()))
+          .append("\r\n");
+    }
+
+    return csv.toString().getBytes(StandardCharsets.UTF_8);
+  }
+
+  private String escapeCsvField(String field) {
+    if (field == null) {
+      return "";
+    }
+    if (field.contains(",") || field.contains("\n") || field.contains("\r")
+        || field.contains("\"")) {
+      return "\"" + field.replace("\"", "\"\"") + "\"";
+    }
+    return field;
   }
 
   /**

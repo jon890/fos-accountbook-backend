@@ -16,11 +16,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/families/{familyUuid}/expenses")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
+@Validated
 public class ExpenseController {
 
   private final ExpenseService expenseService;
@@ -105,6 +110,28 @@ public class ExpenseController {
     ExpenseResponse response = expenseService.updateExpense(loginUser.userUuid(), familyUuid, expenseUuid, request);
 
     return ResponseEntity.ok(ApiSuccessResponse.of("지출이 수정되었습니다", response));
+  }
+
+  @Operation(summary = "월별 지출내역 CSV 내보내기", description = "해당 월의 지출내역을 CSV 파일로 다운로드합니다.")
+  @ApiResponse(responseCode = "200", description = "다운로드 성공")
+  @ApiResponse(responseCode = "403", description = "접근 권한 없음")
+  @GetMapping("/export")
+  public ResponseEntity<byte[]> exportExpensesCsv(
+      @LoginUser LoginUserDto loginUser,
+      @PathVariable CustomUuid familyUuid,
+      @RequestParam @Min(1900) @Max(2100) Integer year,
+      @RequestParam @Min(1) @Max(12) Integer month) {
+
+    byte[] csv = expenseService.exportMonthlyExpenseCsv(
+        loginUser.userUuid(), familyUuid, year, month);
+
+    String filename = String.format("expenses_%d-%02d.csv", year, month);
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_TYPE, "text/csv; charset=UTF-8")
+        .header(HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=\"" + filename + "\"")
+        .body(csv);
   }
 
   @Operation(summary = "지출 삭제", description = "지출 내역을 삭제합니다.")
